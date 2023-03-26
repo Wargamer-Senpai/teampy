@@ -20,5 +20,5 @@
 - (soon with systemd service for Linux)
 
 ## Disclaimer
-using this bot can result in breaking your account or getting it deleted (it shouldnt but can happen).
-Dont use the bot to Spam, Troll or something else 
+using this bot can result in breaking your account or getting it deleted (it shouldnt but can happen).  
+Dont use the bot to Spam, Troll or something else.
