@@ -14,7 +14,7 @@
   - Enter matrix username and password (get these with the [TS5 Extractor](https://github.com/Gamer08YT/TS5Extractor))
   
 - Optional:
-  - enter giphy api (can be optained freely from [developers gihpy](https://developers.giphy.com/dashboard/))
+  - enter giphy api (can be optained freely from [developers giphy](https://developers.giphy.com/dashboard/))
 
 - start main.py
 - (soon with systemd service for Linux)
