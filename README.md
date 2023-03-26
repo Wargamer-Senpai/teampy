@@ -16,6 +16,9 @@
 - Optional:
   - enter giphy api (can be optained freely from [developers gihpy](https://developers.giphy.com/dashboard/))
 
+- start main.py
+- (soon with systemd service for Linux)
+
 ## Disclaimer
 using this bot can result in breaking your account or getting it deleted (it shouldnt but can happen).
 Dont use the bot to Spam, Troll or something else 
