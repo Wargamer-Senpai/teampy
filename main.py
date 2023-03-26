@@ -125,7 +125,7 @@ def func_send_gif():
 #
 # starting of the script
 #
-if not matrix_username or matrix_password:
+if not matrix_username or not matrix_password:
   print("[ERR] finish configuration step first!")
   exit()
 
