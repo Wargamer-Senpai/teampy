@@ -18,7 +18,7 @@ matrix_join_rooms = True
 # if left empty, module wont work/is disabled
 # Example:
 # giphy_api_key="JukUjkllöpop69I134Verr694523Rinn"
-giphy_api_key=""
+giphy_api_key="DNfeltInmrTesyYnk02MqdrE5LB2FCpW"
 
 # change command prefix if wanted
 command_prefix = "!"
