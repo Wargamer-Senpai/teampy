@@ -33,6 +33,15 @@
   - can react to bad words in messages with a gif (default disabled)
   - admin commands:   
     - `!admin help`, display admin help 
+    - `!admin version`, display version of bot, and checks for new version
+    - `!admin health`, checks health of bot, if there is a problem it hopefully will display it
+    - `!admin stop`, stops the bot
+    - `!admin restart`, restarts the bot
+    - `!admin leave-room`, tells the bot to leave the current room (even privat chats)
+    - `!admin stats`, display gathered stats
+    - `!admin reload`, reload current config
+    - `!admin autojoin`, toggle auto join for rooms and direct chats on invite to on or off
+    
 
 - Planned
 (everything is planned to be configureable)
