@@ -3,8 +3,12 @@
 # How to Setup
 
 ## Requirments 
+- Linux or Windows (works on both)
 - Python 3.5 =<
-- Linux/Windows (Linux not tested yet)
+- requests required:  
+  ```sh
+  pip install requests 
+  ```
 
 ## Installation
 - Download latest Release from [Release Page](https://github.com/Wargamer-Senpai/teampy/releases)
@@ -27,6 +31,8 @@
     - `!btc` display price of bitcoin
     - `!help` display help message
   - can react to bad words in messages with a gif (default disabled)
+  - admin commands:   
+    - `!admin help`, display admin help 
 
 - Planned
 (everything is planned to be configureable)
