@@ -47,23 +47,23 @@
 (everything is planned to be configureable)
 
 OS Features<br>
-|Features|Status|Finished|<br>
-|---|---|---|<br>
-|adding a setup.py for easier setup on linux|planned|⬜️|<br>
-|adding a .exe for windows for easier execution|planned|⬜️|<br>
+|Features|Status|Finished|
+|---|---|---|
+|adding a setup.py for easier setup on linux|planned|⬜️|
+|adding a .exe for windows for easier execution|planned|⬜️|
 <br>
 
 General Features<br>
-|Features|Status|Finished|<br>
-|---|---|---|<br>
-|adding a default giphy api key|done|✅|<br>
-|adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|<br>
-|gather stats how much interaction the bot has|WIP/partly finished|✅|<br>
-|adding the current connected teamspeak server to status|planned|⬜️|<br>
-|welcome message for new joined user in rooms|planned|⬜️|<br>
-|self health check and (optional auto notify admins)|planned|⬜️|<br>
-|adding a possibility for administrator to interact with oss or execute certain commands|planned|⬜️|<br>
-|change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|<br>
+|Features|Status|Finished|
+|---|---|---|
+|adding a default giphy api key|done|✅|
+|adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|
+|gather stats how much interaction the bot has|WIP/partly finished|✅|
+|adding the current connected teamspeak server to status|planned|⬜️|
+|welcome message for new joined user in rooms|planned|⬜️|
+|self health check and (optional auto notify admins)|planned|⬜️|
+|adding a possibility for administrator to interact with oss or execute certain commands|planned|⬜️|
+|change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|
 
 <!--|⬜️|✅|-->
 
