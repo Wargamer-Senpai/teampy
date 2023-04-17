@@ -46,14 +46,14 @@
 ## Roadmap
 (everything is planned to be configureable)
 
-OS Features
+OS Features<br>
 |Features|Status|Finished|
 |---|---|---|
 |adding a setup.py for easier setup on linux|planned|⬜️|
 |adding a .exe for windows for easier execution|planned|⬜️|
 <br>
 
-General Features
+General Features<br>
 |Features|Status|Finished|
 |---|---|---|
 |adding a default giphy api key|done|✅|
