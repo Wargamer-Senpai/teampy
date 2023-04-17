@@ -43,22 +43,32 @@
     - `!admin autojoin`, toggle auto join for rooms and direct chats on invite to on or off
     
 
-- Planned
+## Roadmap
 (everything is planned to be configureable)
-  - OSS:
-    - adding a setup.py for easier setup on linux
-    - adding a .exe for windows for easier execution
-    
-  - General
-    - adding a default giphy api key
-    - adding the current connected teamspeak server to status
-    - adding a way to set the profile of the bot
-    - adding administration features (start/stop/restart bot via command, with admin whitelist)
-    - self health check and (optional auto notify admins)
-    - for administrator adding a possibility to interact with oss or execute certain commands
-    - gather stats how much interaction the bot has 
-    - welcome message for new joined user in rooms
-    - change name (as soons teamspeak supports name changes)
+
+General Features
+|Features|Status|Finished|
+|---|---|---|
+|adding a setup.py for easier setup on linux|planned|⬜️|
+|adding a .exe for windows for easier execution|planned|⬜️|
+
+
+General Features
+|Features|Status|Finished|
+|---|---|---|
+|adding a default giphy api key|done|✅|
+|adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|
+|gather stats how much interaction the bot has|WIP/partly finished|✅|
+|adding the current connected teamspeak server to status|planned|⬜️|
+|welcome message for new joined user in rooms|planned|⬜️|
+|self health check and (optional auto notify admins)|planned|⬜️|
+|adding a possibility for administrator to interact with oss or execute certain commands|planned|⬜️|
+|change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|
+
+<!--|⬜️|✅|-->
+
+<br>
+
 ## Contact
 Matrix Chat `wargamer@myteamspeak.com` 
 or just open an isssue
