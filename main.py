@@ -77,13 +77,17 @@ stats_description = {
   "messages_send_count": "How many Messages where sent",
   "gifs_count": "How many gifs where sent",
   "startup_count": "How many times the bot started",
-  "help_command_count": "help Command Count", 
-  "btc_command_count": "BTC Command Count",
-  "eth_command_count": "ETH Command Count",
-  "whoami_command_count": "whoami Command Count",
-  "whois_command_count": "whois Command Count",
-  "ping_command_count": "ping Command Count"
+  "help_command_count": "help command count", 
+  "btc_command_count": "BTC command count",
+  "eth_command_count": "ETH command count",
+  "whoami_command_count": "whoami command count",
+  "whois_command_count": "whois command count",
+  "ping_command_count": "ping command count",
+  "roll_command_count": "roll command count",
+  "poll_command_count": "poll command count"
 }
+# some preset emojis if the poll has no emojis set
+poll_emojis = [":+1:",":-1:",":wave:",":ok_hand:",":100:",":pinch:"]
 
 #
 # functions
@@ -257,6 +261,11 @@ def func_health_check():
   + "\nMatrix Server URL: " + bot_health_check_baseurl + "\nUsername: " + bot_health_check_username \
   + "\nPassword: " + bot_health_check_password + "\nBad Words File: " + bot_health_check_badwords
 
+def func_add_stats(key):
+  if key in stat_dict:
+    stat_dict[key] += 1
+  else:
+    stat_dict[key] = 1
 
 #
 # starting of the script
@@ -288,6 +297,8 @@ if not os.path.exists(stats_file):
                 "whoami_command_count=0\n"
                 "whois_command_count=0\n"
                 "ping_command_count=0\n"
+                "roll_command_count=0\n"
+                "poll_command_count=0\n"
                 )
         
 with open(stats_file, "r") as f:
@@ -301,9 +312,13 @@ login_url = config.matrix_base_url + "/_matrix/client/r0/login"
 login_data = {"type": "m.login.password", "user": config.matrix_username, "password": config.matrix_password}
 login_headers = {"User-Agent": user_agent}
 response = requests.post(login_url, json=login_data, headers=login_headers)
-access_token = response.json()["access_token"]
-matrix_self = response.json()["user_id"]
-
+if response.json().get("access_token"):
+  access_token = response.json()["access_token"]
+  matrix_self = response.json()["user_id"]
+  print("[INF] Login Successfull own Matrix ID " + matrix_self)
+else: 
+  print("[ERR] Error false Login, Username or Password wrong %s" % response.text)
+  exit(1)
 
 # prepare first sync
 sync_url = config.matrix_base_url + "/_matrix/client/r0/sync?3000"
@@ -323,7 +338,7 @@ func_check_invite()
 # not working 
 #func_set_avatar()
 func_set_status()
-stat_dict["startup_count"] += 1
+func_add_stats("startup_count")
 
 while True:
   time.sleep(1)
@@ -351,16 +366,16 @@ while True:
               # check if the event is a message
               if event["type"] == "m.room.message" and event["sender"] != matrix_self:
                 # Print the message body, need to changed to loggin into a file
-                print("[DBG] "+event["sender"]  + ": " + event["content"]["body"])
                 matrix_sender = event["sender"]
                 matrix_received_message = event["content"]["body"]
                 matrix_room = room_id
-
+                print("[DBG] "+ matrix_sender  + ": " + matrix_received_message +" (room: "+ matrix_room +")")
+                #print(json.dumps(event,sort_keys=True, indent=4))
 
                 # check what command was send
                 # gif command
                 if config.command_prefix + config.command_gif in matrix_received_message:
-                  stat_dict["gifs_count"] += 1
+                  func_add_stats("gifs_count")
                   matrix_send_message = func_send_gif()
                 elif config.command_prefix + config.command_btc in matrix_received_message:
                   btc_base_url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies="
@@ -378,7 +393,7 @@ while True:
                   \nEuro: "+str(btc_eur)+" \nGBP: "+str(btc_gbp)+" \nUSD: "+str(btc_usd)+" \
                   \nfrom https://www.coingecko.com/"
 
-                  stat_dict["btc_command_count"] += 1
+                  func_add_stats("btc_command_count")
                   
                 elif config.command_prefix + config.command_eth in matrix_received_message:
                   eth_base_url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies="
@@ -396,15 +411,37 @@ while True:
                   \nEuro: "+str(eth_eur)+" \nGBP: "+str(eth_gbp)+" \nUSD: "+str(eth_usd)+" \
                   \nfrom https://www.coingecko.com/"
 
-                  stat_dict["eth_command_count"] += 1
+                  func_add_stats("eth_command_count")
 
                 # help
                 elif config.command_prefix + config.command_help in matrix_received_message:
                   matrix_send_message = "Here is help, dont worry!\n"
                   for key in config.help_display:
                     matrix_send_message += "**" + config.command_prefix + key + ":** " + config.help_display[key] + "\n"
-                  stat_dict["help_command_count"] += 1
-                  
+                  func_add_stats("help_command_count")
+
+                # public stats
+                elif config.command_prefix + config.command_stats in matrix_received_message:
+                  if config.stats_visible == "public" or  config.stats_visible == "admin" and matrix_sender in config.bot_admin:
+                    params = {"filter": "{\"presence\":{\"types\":[\"m.presence\"]},\"account_data\":{\"types\":[\"m.direct\"]},\"room\":{\"rooms\":[],\"account_data\":{\"types\":[\"m.tag\",\"m.space\"]},\"state\":{\"types\":[\"m.room.member\"],\"lazy_load_members\":true},\"timeline\":{\"types\":[\"m.room.message\",\"m.room.encrypted\",\"m.sticker\",\"m.reaction\"]}}}", "timeout": 0}
+
+                    friend_response = requests.get(config.matrix_base_url + "/_matrix/client/r0/sync", headers=sync_headers, params=params)
+                    if friend_response.status_code == 200:
+                        matrix_friends = friend_response.json()
+                        matrix_friends = matrix_friends.get("account_data", {}).get("events", [])
+                        matrix_friend_count = len(matrix_friends)
+                    else:
+                        print("Failed to retrieve friend list. %s" % response.text)          
+
+                    #pretty print
+                    #print(json.dumps(matrix_friends,sort_keys=True, indent=4))
+
+                    matrix_send_message = "Number of friends (all time): **" + str(matrix_friend_count) + "**"
+                    for key in stat_dict:
+                      matrix_send_message += "\n"+stats_description[key]+": **" + str(stat_dict[key]) + "**"
+
+                  else:
+                    matrix_send_message = "the stats are currently admin only :eyes:"
 
                 # whoami
                 elif config.command_prefix + config.command_whoami in matrix_received_message:
@@ -417,7 +454,7 @@ while True:
                   + "\nI see you as a " + user_rank
                   matrix_sender_name = ""
 
-                  stat_dict["whoami_command_count"] += 1
+                  func_add_stats("whoami_command_count")
 
                 # whois
                 elif config.command_prefix + config.command_whois in matrix_received_message :
@@ -443,9 +480,44 @@ while True:
                     matrix_send_message = "The identifier is: "+ matrix_identifier + "\nThe name is: " + matrix_sender_name \
                     + "\nI see that person as a " + user_rank
                     matrix_sender_name = ""
-                    stat_dict["whois_command_count"] += 1
+                    func_add_stats("whois_command_count")
                   else:
                     matrix_sender_name = rank_error_message
+
+                # polls
+                elif config.command_prefix + config.command_poll in matrix_received_message :
+                  func_add_stats("poll_command_count")
+                  poll_choices = ""
+                  poll_count = 0
+
+                  poll_question = matrix_received_message.split("\n")[0] 
+                  poll_question = poll_question.split()  
+                  poll_question = ' '.join(poll_question[1:])
+                  if not poll_question: 
+                    poll_question = "Do you like polls ?"
+                  poll_choices_raw = matrix_received_message.split("\n")
+
+                  for choice in poll_choices_raw:
+                    if choice != poll_choices_raw[0]:
+                      if not choice.startswith(":") and choice:
+                        choice = str(poll_emojis[poll_count]) + " " + str(choice)
+                        if poll_count >= 5:
+                          poll_count = 0
+                        poll_count += 1
+                      poll_choices += str(choice) + "\n"
+                  if not poll_choices:
+                    poll_choices = ":+1: yes \n :-1: no"
+
+                  matrix_send_message = "a new poll just started! \n\nQuestion: \"__" + poll_question + "__\"\n" \
+                  + "Choose the reaction from below to vote\n\n Choices:\n" + poll_choices
+
+
+
+                # dice
+                elif config.command_prefix + config.command_dice in matrix_received_message :
+                  func_add_stats("roll_command_count")
+                  dice_number = random.randint(1, 6)
+                  matrix_send_message = "You rolled a **" + str(dice_number) + "** :exploding_head:"
 
                 # admin help
                 elif config.command_prefix + config.command_admin_help in matrix_received_message or config.command_prefix + config.command_admin_base == matrix_received_message + " ":
@@ -580,7 +652,7 @@ while True:
                         
                     matrix_send_message += "\nLatency to ts: " + latency
 
-                    stat_dict["ping_command_count"] += 1
+                    func_add_stats("ping_command_count")
                 elif matrix_received_message.startswith(config.command_prefix):
                   matrix_send_message = "command not found :thinking: ("+matrix_received_message+")\nif you need more info use `"+config.command_prefix+config.command_help+"`"
 
@@ -602,8 +674,8 @@ while True:
                   response = requests.post(message_url, json=message_data, headers=message_headers)
                   matrix_send_message=""
                   if response.status_code == 200:
-                    print("[DBG] Message sent successfully!")
-                    stat_dict["messages_send_count"] += 1
+                    print("[DBG] Message sent successfully! (room "+room_id+")")
+                    func_add_stats("messages_send_count")
                   else:
                     print("[ERR] Error sending message to Matrix: %s" % response.text)
                     time.sleep(2)
@@ -618,6 +690,7 @@ while True:
                   else:
                     print("[ERR] Error setting message to Read: %s" % response.text)
                     time.sleep(2)
+
                   # write new stats to file
                   with open(stats_file, "w") as f:
                       for key, value in stat_dict.items():
