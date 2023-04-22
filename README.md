@@ -27,9 +27,14 @@
 - Current 
   - commands: 
     - `!gif` or `!gif <string>`, without search string will send a random gif
+    - `!stats` display gathered stats
     - `!eth` display price of ethereum
     - `!btc` display price of bitcoin
     - `!help` display help message
+    - `!whoami` display help message
+    - `!whois <identifier>` display help message
+    - `!roll` roll a dice
+    - `!poll <question>` post a poll where user can vote with emojis more info [here](https://github.com/Wargamer-Senpai/teampy/wiki/Overview#poll-string)
   - can react to bad words in messages with a gif (default disabled)
   - admin commands:   
     - `!admin help`, display admin help 
