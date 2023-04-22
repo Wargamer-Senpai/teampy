@@ -694,7 +694,7 @@ while True:
                   # write new stats to file
                   with open(stats_file, "w") as f:
                       for key, value in stat_dict.items():
-                          f.write(key + "=" + value + "\n")
+                          f.write(str(key) + "=" + str(value) + "\n")
 
                   time.sleep(1)
 
