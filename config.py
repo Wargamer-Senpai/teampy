@@ -45,7 +45,7 @@ presence_state = "online"
 # for example how many times he got pinged and ponged, how many gifs did he sent, etc...
 # Example: 
 # stats_visible = "public" or "admins"
-stats_visible = "admin"
+stats_visible = "public"
 
 # check if in conversation is a bad word
 # if set to True, the bot will search out an gif, with the context of "no you"
