@@ -1,4 +1,5 @@
 # teampy - teamspeak Matrix Chat Bot
+you can test the bot yourself, just add `teampy@myteamspeak.com` to your contacts
 
 # How to Setup
 
