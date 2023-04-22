@@ -3,3 +3,6 @@ show_downloads: true
 markdown: GFM
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
+github:
+  zip_url: https://github.com/Wargamer-Senpai/teampy/releases/latest/download/teampy.zip
+  another_url: 
