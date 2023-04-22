@@ -45,7 +45,7 @@ presence_state = "online"
 # for example how many times he got pinged and ponged, how many gifs did he sent, etc...
 # Example: 
 # stats_visible = "public" or "admins"
-stats_visible = "public"
+stats_visible = "admin"
 
 # check if in conversation is a bad word
 # if set to True, the bot will search out an gif, with the context of "no you"
@@ -58,12 +58,15 @@ command_prefix = "!"
 
 #general commands
 command_gif = "gif"
+command_stats = "stats"
 command_help = "help"
 command_ping = "ping"
 command_btc = "btc"
 command_eth = "eth"
 command_whoami = "whoami"
 command_whois = "whois"
+command_dice = "roll"
+command_poll = "poll"
 
 #admin commands
 command_base_admin = "admin " 
@@ -82,12 +85,15 @@ command_admin_autojoin = command_base_admin + "autojoin"
 # normal user help page 
 help_display = {
     command_gif: "send random gif or use search tag `!gif <search>`",
+    command_stats: "display gathered stats",
     command_help: "display this list",
     command_ping: "lets ping pong",
     command_btc: "display prices of Bitcoin",
     command_eth: "display prices of Ethereum",
     command_whoami: "tells you your identifier and name and if your admin",
-    command_whois: "parse the matrix identifier and i will find the name of the person `"+ command_prefix + command_whois+" <identifier>`"
+    command_whois: "parse the matrix identifier and i will find the name of the person `"+ command_prefix + command_whois+" <identifier>`",
+    command_dice: "roll a number between 1 and 6",
+    command_poll: "start a poll with emojis to vote, example `!poll should we do polls?` more info [here](https://github.com/Wargamer-Senpai/teampy/wiki/Overview#poll-string)"
     }
 
 # admin help page 
