@@ -71,7 +71,9 @@ OS Features<br>
 |Features|Status|Finished|
 |---|---|---|
 |adding a setup.py for easier setup on linux|planned|⬜️|
+|adding systemd service |planned|⬜️|
 |adding a .exe for windows for easier execution|planned|⬜️|
+|adding a container image|planned|⬜️|
 <br>
 
 General Features<br>
@@ -80,6 +82,7 @@ General Features<br>
 |adding a default giphy api key|done|✅|
 |adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|
 |gather stats how much interaction the bot has|WIP/partly finished|✅|
+|adding a check for new version of the teamspeak clien|in Work|⬜️|
 |adding the current connected teamspeak server to status|planned|⬜️|
 |welcome message for new joined user in rooms|planned|⬜️|
 |self health check and (optional auto notify admins)|planned|⬜️|
