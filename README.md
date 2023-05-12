@@ -1,4 +1,19 @@
-# teampy - teamspeak Matrix Chat Bot
+<div align="center">
+<h1>teampy<br/><sub>a simple Matrix Chat Bot</sub></h1>
+
+▶️ <a href="https://github.com/Wargamer-Senpai/teampy/wiki#setup">Setup</a> |
+<a href="https://github.com/Wargamer-Senpai/teampy">GitHub</a> |
+<a href="https://github.com/Wargamer-Senpai/teampy/wiki">Documentation</a> |
+<a href="#roadmap">Roadmap</a>
+
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/wargamer-senpai/teampy?color=blueviolet&logoColor=blueviolet&logo=github&style=flat-square)]()
+[![GitHub all releases](https://img.shields.io/github/downloads/wargamer-senpai/teampy/total?color=blue&logo=github&logoColor=blue&style=flat-square)]()
+[![GitHub Repo stars](https://img.shields.io/github/stars/wargamer-senpai/teampy?color=lightblue&logoColor=lightblue&logo=github&style=flat-square)]()
+[![GitHub top language](https://img.shields.io/github/languages/top/wargamer-senpai/teampy?color=yellow&logo=python&logoColor=yellow&style=flat-square)]()
+[![GitHub last commit](https://img.shields.io/github/last-commit/wargamer-senpai/teampy?color=brightgreen&logo=git&logoColor=brightgreen&style=flat-square)]()
+</div>
+
+# try it yourself!
 you can test the bot yourself, just add `teampy@myteamspeak.com` to your contacts
 
 # How to Setup
@@ -6,7 +21,7 @@ you can test the bot yourself, just add `teampy@myteamspeak.com` to your contact
 ## Requirments 
 - Linux or Windows (works on both)
 - Python 3.5 =<
-- requests required:  
+- module requests required:  
   ```sh
   pip install requests 
   ```
