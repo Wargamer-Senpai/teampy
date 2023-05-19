@@ -85,7 +85,7 @@ General Features<br>
 |adding a check for new version of the teamspeak client|in Work/partly finished|⬜️|
 |adding the current connected teamspeak server to status|planned|⬜️|
 |welcome message for new joined user in rooms|planned|⬜️|
-|self health check and (optional auto notify admins)|planned|⬜️|
+|self health check and (optional auto notify admins)|partly finished|⬜️|
 |adding a possibility for administrator to interact with oss or execute certain commands|planned|⬜️|
 |change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|
 
