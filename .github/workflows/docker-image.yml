@@ -3,6 +3,7 @@ name: Image build and push, on new release
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   build:
