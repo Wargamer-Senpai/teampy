@@ -1,0 +1,13 @@
+[Unit]
+Description=teampy - teamspeak Matrix Chat Bot
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/teampy/main.py
+Restart=on-failure
+RestartSec=5s
+StartLimitInterval=60
+StartLimitBurst=5
+
+[Install]
+WantedBy=default.target
