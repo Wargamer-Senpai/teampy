@@ -7,7 +7,6 @@ import os
 
 arg1 = sys.argv[1]
 
-print("[DBG] Waiting some seconds before starting...")
 time.sleep(3)
 if arg1 == "Linux": 
     # get current execution directory 
