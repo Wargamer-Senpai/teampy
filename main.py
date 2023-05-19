@@ -1020,10 +1020,6 @@ while True:
                   else:
                     func_send_message(command_disabled_message)
 
-                #!DEBUG - only for testing 
-                elif config.command_prefix + "notify_test" in matrix_received_message:
-                  func_notify_update()
-
                 # ping 
                 elif config.command_prefix + config.command_ping in matrix_received_message:
                   if config.commands_overview[config.command_ping]["command_enabled"] == True:
