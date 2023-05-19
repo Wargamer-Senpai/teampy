@@ -540,7 +540,7 @@ def func_bot_restart():
 # check if bot is running inside a container #
 ##############################################
 def func_container_check():
-  return os.path.exists('/proc/1/cgroup')
+  return any(key in os.environ for key in ['DOCKER_CONTAINER', 'KUBERNETES_PORT', 'CONTAINER_ID'])
 
 
 
