@@ -27,5 +27,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/privattsbot:${{ steps.extract_tag.outputs.tag }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/privattsbot:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/teampy:${{ steps.extract_tag.outputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/teampy:latest
