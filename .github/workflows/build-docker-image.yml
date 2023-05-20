@@ -1,8 +1,9 @@
-name: Image build and push, on new release
+name: build and push docker image, on new release
 
 on:
   release:
     types: [published]
+
 
 jobs:
   build:
@@ -26,6 +27,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/privattsbot:${{ steps.extract_tag.outputs.tag }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/privattsbot:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/teampy:${{ steps.extract_tag.outputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/teampy:latest

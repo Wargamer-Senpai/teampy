@@ -7,10 +7,11 @@
 <a href="#roadmap">Roadmap</a>
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/wargamer-senpai/teampy?color=blueviolet&logoColor=blueviolet&logo=github&style=flat-square)]()
-[![GitHub all releases](https://img.shields.io/github/downloads/wargamer-senpai/teampy/total?color=blue&logo=github&logoColor=blue&style=flat-square)]()
+[![GitHub all releases](https://img.shields.io/github/downloads/wargamer-senpai/teampy/total?label=Downloads&color=blue&logo=github&logoColor=blue&style=flat-square)]()
 [![GitHub Repo stars](https://img.shields.io/github/stars/wargamer-senpai/teampy?color=lightblue&logoColor=lightblue&logo=github&style=flat-square)]()
 [![GitHub top language](https://img.shields.io/github/languages/top/wargamer-senpai/teampy?color=yellow&logo=python&logoColor=yellow&style=flat-square)]()
 [![GitHub last commit](https://img.shields.io/github/last-commit/wargamer-senpai/teampy?color=brightgreen&logo=git&logoColor=brightgreen&style=flat-square)]()
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/wargamer-senpai/teampy/build-docker-image.yml?label=Image%20Build&logo=docker&style=flat-square)]()
 </div>
 
 # try it yourself!
