@@ -109,7 +109,7 @@ stats_description = {
 # some preset emojis if the poll has no emojis set
 poll_emojis = [":+1:",":-1:",":wave:",":ok_hand:",":100:",":pinch:"]
 # set log file 
-log_file = os.path.join(main_script_path, "logs","output_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+log_file = os.path.join(main_script_path, "logs","output_" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')) + ".log"
 # set debug mode
 debug_mode = False
 # file for saving the chats, that get notified
@@ -562,8 +562,11 @@ if func_container_check():
         with open(target_config, 'wb') as dest_file:
             dest_file.write(src_file.read())
     func_write_to_log("config.py copied successfully!", "INFO", "startup_container_check")
+  else:
+    func_write_to_log("config.py already exists!", "INFO", "startup_container_check")
+
   # import config file from persistent folder
-  import configs.config 
+  import configs.config as config
   # change folders for files that needs to be persistent
   notify_file = os.path.join("configs","notify.txt")
   stats_file = os.path.join(main_script_path,"configs", "stats.txt")
