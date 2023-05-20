@@ -1,5 +1,8 @@
 FROM alpine:latest
 
+# signal the script that it is a container
+ENV CONTAINER_BOOL="True"
+
 RUN mkdir -p /opt/teampy/configs && \
     mkdir -p /opt/teampy/modules && \
     mkdir -p /opt/teampy/logs && \

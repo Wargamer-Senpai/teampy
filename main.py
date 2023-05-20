@@ -540,9 +540,10 @@ def func_bot_restart():
 # check if bot is running inside a container #
 ##############################################
 def func_container_check():
-  return any(key in os.environ for key in ['DOCKER_CONTAINER', 'KUBERNETES_PORT', 'CONTAINER_ID'])
-
-
+  if 'CONTAINER_BOOL' in os.environ:
+    return True
+  else:
+    return False    
 
 
 
@@ -1019,6 +1020,7 @@ while True:
                       func_send_message(rank_error_message)
                   else:
                     func_send_message(command_disabled_message)
+
 
                 # ping 
                 elif config.command_prefix + config.command_ping in matrix_received_message:
