@@ -16,7 +16,8 @@ COPY ./modules/* /opt/teampy/modules
 
 RUN apk add --no-cache python3 && \
     /usr/bin/python3 -m ensurepip && \
-    /usr/bin/pip3 --no-input install requests
+    /usr/bin/pip3 --no-input install requests&& \
+    apk add iputils
 WORKDIR /opt/teampy/
 CMD [ "/usr/bin/python3", "main.py" ]
 
