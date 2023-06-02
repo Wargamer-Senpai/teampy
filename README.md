@@ -1,5 +1,8 @@
 <div align="center">
-<h1>teampy<br/><sub>a simple Matrix Chat Bot</sub></h1>
+  
+![Unbenannt_6 (1)](https://github.com/Wargamer-Senpai/teampy/assets/77844672/be47db30-787c-4a8d-81a6-527ca266157b)
+
+<h1><sub>a simple Matrix Chat Bot</sub></h1>
 
 ▶️ <a href="https://github.com/Wargamer-Senpai/teampy/wiki#setup">Setup</a> |
 <a href="https://github.com/Wargamer-Senpai/teampy">GitHub</a> |
