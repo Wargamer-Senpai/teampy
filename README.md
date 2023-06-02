@@ -15,10 +15,18 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/wargamer-senpai/teampy/build-docker-image.yml?label=Image%20Build&logo=docker&style=flat-square)]()
 </div>
 
+<br><br><br>
+
+![Unbenannt](https://github.com/Wargamer-Senpai/teampy/assets/77844672/8c38a5d3-7806-4129-9652-535cfcf3bc74)
+***
+teampy - a Python-based chat bot specially created for the Matrix Chat of teamspeak. Although its current capabilities are limited to a set of fundamental commands, it will receive more functionality from time to time.  (<a href="https://github.com/Wargamer-Senpai/teampy/wiki#commands-overview-and-examples">command overview</a>). The mindset behind the bot is centered around configurability, which is why the configuration file can sometimes feel overwhelming.
+
 # try it yourself!
 you can test the bot yourself, just add `teampy@myteamspeak.com` to your contacts
 
-# How to Setup
+<br><br><br>
+![Unbenannt_1](https://github.com/Wargamer-Senpai/teampy/assets/77844672/dd691471-e496-4792-8bb6-ae2948275d68)
+***
 <a href="#methode-1-docker-run">Methode 1: docker run</a><br>
 <a href="#methode-2-docker-compose">Methode 2: docker-compose</a><br>
 <a href="#methode-3-manuell-installation">Methode 3: Manuell Installation</a><br>
@@ -130,7 +138,10 @@ docker start teampy
 systemctl enable --now teampy.service
 ```
 <br><br><br>
-# Features 
+
+![Unbenannt_5](https://github.com/Wargamer-Senpai/teampy/assets/77844672/2674787b-c351-4227-a9ce-e565ecce99b6)
+***
+
 - Current 
   - commands: 
     - `!gif` or `!gif <string>`, without search string will send a random gif
@@ -189,8 +200,10 @@ General Features<br>
 Matrix Chat `wargamer@myteamspeak.com` 
 or just open an isssue
 
+<br><br><br>
 
-## Disclaimer
+![Unbenannt_3](https://github.com/Wargamer-Senpai/teampy/assets/77844672/c56eb363-f74d-4586-a714-79cce58f77b8)
+***
 It is Recommended to use a Second Account or create a new account for the bot,  
 because using this bot **can** result in breaking your account (it shouldnt but can happen).  
 
