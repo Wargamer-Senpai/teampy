@@ -22,10 +22,8 @@
 
 ![Unbenannt](https://github.com/Wargamer-Senpai/teampy/assets/77844672/8c38a5d3-7806-4129-9652-535cfcf3bc74)
 ***
-teampy - a Python-based chat bot specially created for the Matrix Chat of teamspeak. Although its current capabilities are limited to a set of fundamental commands, it will receive more functionality from time to time.  (<a href="https://github.com/Wargamer-Senpai/teampy/wiki#commands-overview-and-examples">command overview</a>). The mindset behind the bot is centered around configurability, which is why the configuration file can sometimes feel overwhelming.
-
-# try it yourself!
-you can test the bot yourself, just add `teampy@myteamspeak.com` to your contacts
+teampy - a Python-based chat bot specially created for the Matrix Chat of teamspeak. Although its current capabilities are limited to a set of fundamental commands, it will receive more functionality from time to time.  (<a href="https://github.com/Wargamer-Senpai/teampy/wiki#commands-overview-and-examples">command overview</a>). The mindset behind the bot is centered around configurability, which is why the configuration file can sometimes feel overwhelming.  
+You can test the bot yourself, just add `teampy@myteamspeak.com` to your contacts
 
 <br><br><br>
 ![Unbenannt_1](https://github.com/Wargamer-Senpai/teampy/assets/77844672/dd691471-e496-4792-8bb6-ae2948275d68)
