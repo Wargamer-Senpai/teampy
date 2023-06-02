@@ -101,5 +101,5 @@ or just open an isssue
 
 ## Disclaimer
 It is Recommended to use a Second Account or create a new account for the bot,  
-because using this bot **can** result in breaking your account or getting it deleted (it shouldnt but can happen).  
-Dont use the bot to Spam, Troll or something else.
+because using this bot **can** result in breaking your account (it shouldnt but can happen).  
+
