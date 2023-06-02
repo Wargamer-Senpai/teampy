@@ -113,7 +113,7 @@ log_file = os.path.join(main_script_path, "logs","output_" + datetime.datetime.n
 # set debug mode
 debug_mode = False
 # file for saving the chats, that get notified
-notify_file = os.path.join("modules","notify.txt")
+notify_file = os.path.join(main_script_path,"modules","notify.txt")
 
 
 ###############
@@ -568,7 +568,7 @@ if func_container_check():
   # import config file from persistent folder
   import configs.config as config
   # change folders for files that needs to be persistent
-  notify_file = os.path.join("configs","notify.txt")
+  notify_file = os.path.join(main_script_path,"configs","notify.txt")
   stats_file = os.path.join(main_script_path,"configs", "stats.txt")
   
 else:
