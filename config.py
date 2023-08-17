@@ -58,6 +58,10 @@ bad_word_checks = False
 # @everyone it looks like a new update arrived, Version: beta74
 matrix_update_message = "<@_|everyone> it looks like a new update arrived, Version: " 
 
+# enable plugins
+# in the folder plugins, here can be put addiotonal code
+# Default: plugins_on
+plugins_on = True
 
 
 # command prefix 

@@ -499,9 +499,13 @@ def func_health_check():
 # add stat to stats.txt, or create missing stat #
 #################################################
 def func_add_stats(key):
+  current_function = inspect.currentframe().f_code.co_name
+  func_write_to_log("key parsed:" + key , "INFO", current_function)
   if key in stat_dict:
+    func_write_to_log("key inside array" , "INFO", current_function)
     stat_dict[key] += 1
   else:
+    func_write_to_log("key outside array" , "INFO", current_function)
     stat_dict[key] = 1
 
 
@@ -520,7 +524,7 @@ def func_bot_stop():
 def func_bot_restart():
   current_function = inspect.currentframe().f_code.co_name
   
-  func_write_to_log("restarting bot...", "INFO", current_function)
+  func_write_to_log("restarting bot... on " + os_name , "INFO", current_function)
   # splitted linux and windows if function shouldnt work
   if os_name == "Linux":
     python_executable = sys.executable
@@ -576,7 +580,7 @@ else:
 
 
 if not config.matrix_username or not config.matrix_password:
-  func_write_to_log("finish configuration step first!", "ERROR", "startup")
+  func_write_to_log("finish configuration step first! (username and/or password empty)", "ERROR", "startup")
   exit()
 
 func_write_to_log("starting bot....", "INFO", "startup")
@@ -1047,12 +1051,25 @@ while True:
                           break
                       func_send_message(matrix_prepare_message + "\nLatency to ts: " + latency)
 
-                      func_add_stats("ping_command_count")
+                    func_add_stats("ping_command_count")
                   else:
                     func_send_message(command_disabled_message)
+                
+                
+
                 elif matrix_received_message.startswith(config.command_prefix):
                   func_send_message("command not found :thinking: ("+matrix_received_message+")\nif you need more info use `"+config.command_prefix+config.command_help+"`")
                 else :
+                  for root, dirs, files in os.walk("plugins"):
+                    if 'main.py' in files:
+                      main_script_path = os.path.join(root, 'main.py')
+                      module_name = os.path.basename(root)
+                      
+                      spec = importlib.util.spec_from_file_location(module_name, main_script_path)
+                      module = importlib.util.module_from_spec(spec)
+                      spec.loader.exec_module(module)
+
+                      print(f"Executed Plugin {module_name}") #!TODO: change to logging
                   func_write_to_log("chat message not directed to bot", "DEBUG", "main_loop")
 
                 # check for bad words
