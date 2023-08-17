@@ -7,7 +7,7 @@ import os
 import importlib.util
 
 def load_config():  
-  config_path = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "plugins","hello-world-test","config.py")
+  config_path = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "plugins","example-plugin","config.py")
   spec = importlib.util.spec_from_file_location("config", config_path)
   config_module = importlib.util.module_from_spec(spec)
   spec.loader.exec_module(config_module)
