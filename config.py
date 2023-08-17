@@ -60,8 +60,8 @@ matrix_update_message = "<@_|everyone> it looks like a new update arrived, Versi
 
 # enable plugins
 # in the folder plugins, here can be put addiotonal code
-# Default: plugins_on
-plugins_on = True
+# Default: plugins_on = False 
+plugins_on = False
 
 
 # command prefix 
