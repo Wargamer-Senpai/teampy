@@ -1202,19 +1202,19 @@ while True:
                       plugin_rank="admin"
                     else:
                       plugin_rank="user"
-                    for subdir, _, _ in os.walk("plugins"):
-                      main_script_path = os.path.join(subdir, "main.py")
+                    for subdir, _, _ in os.walk(os.path.join(main_script_path,"plugins")):
+                      plugin_path = os.path.join(subdir, "main.py")
                       
-                      if os.path.exists(main_script_path):
+                      if os.path.exists(plugin_path):
                         try:
-                          plugin_output = subprocess.check_output(["python", main_script_path, matrix_received_message, matrix_sender, config.command_prefix,plugin_rank], text=True).strip()
+                          plugin_output = subprocess.check_output(["python", plugin_path, matrix_received_message, matrix_sender, config.command_prefix,plugin_rank], text=True).strip()
                           if plugin_output:
                             plugin_check=1
                             func_send_message(plugin_output)
                             del plugin_output
                             break
                         except subprocess.CalledProcessError as e:
-                          func_write_to_log("There was an error executing a plugin, Path: " + str(main_script_path) + " Error: " + str(e), "ERROR", "main_loop")
+                          func_write_to_log("There was an error executing a plugin, Path: " + str(plugin_path) + " Error: " + str(e), "ERROR", "main_loop")
 
                   if matrix_received_message.startswith(config.command_prefix) and plugin_check == 0:
                     func_send_message("command not found :thinking: ("+matrix_received_message+")\nif you need more info use `"+config.command_prefix+config.command_help+"`")
