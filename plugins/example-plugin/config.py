@@ -1,1 +1,0 @@
-message_test = "Hi :wave:"
