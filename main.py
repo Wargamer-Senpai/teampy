@@ -33,6 +33,7 @@ from distutils.version import LooseVersion
 import logging
 import datetime
 import inspect
+import re
 
 # import config.py
 import config 
@@ -52,8 +53,8 @@ from modules.version import *
 user_agent = "Go-http-client/2.0"
 
 
-# url for syncing
-sync_url = "/_matrix/client/r0/sync?3000"
+# url for syncing, 20000ms -> 20 seconds
+sync_base_url = "/_matrix/client/r0/sync?20000"
 # tmp variable for preparing the message for sending
 matrix_prepare_message = ""
 # data from api
@@ -91,6 +92,13 @@ matrix_notify_rooms = ()
 main_script_path = os.path.dirname(os.path.abspath(__file__))
 # the file where all stats are saved to
 stats_file = os.path.join(main_script_path,"modules", "stats.txt")
+# check if the dictonarys has been check by the config merge
+commands_dict_checked = False
+admin_dict_checked = False
+# response when searching for a user/users
+user_room_ids = {}
+# contains the boolean if configs should be merged
+merge_bool = config.merge_config
 
 # description for stats
 stats_description = {
@@ -181,14 +189,18 @@ def func_send_message(matrix_send_message):
       time.sleep(2)
 
     # set message to read, only works in privat chat
-    payload = {"m.fully_read": event["event_id"], "m.read": event["event_id"]}
-    response = requests.post(config.matrix_base_url + "/_matrix/client/r0/rooms/" + room_id + "/read_markers", headers=message_headers, json=payload)
+    try:
+      payload = {"m.fully_read": event["event_id"], "m.read": event["event_id"]}
+      response = requests.post(config.matrix_base_url + "/_matrix/client/r0/rooms/" + room_id + "/read_markers", headers=message_headers, json=payload)
+      if response.status_code == 200:
+        func_write_to_log("Message successfully set to read!", "INFO", current_function)
+      else:
+        func_write_to_log("Error setting message to Read: %s" % response.text, "ERROR", current_function)
+        time.sleep(2)
+    except NameError:
+      payload = {}
     
-    if response.status_code == 200:
-      func_write_to_log("Message successfully set to read!", "INFO", current_function)
-    else:
-      func_write_to_log("Error setting message to Read: %s" % response.text, "ERROR", current_function)
-      time.sleep(2)
+
 
     # write new stats to file
     with open(stats_file, "w") as f:
@@ -255,7 +267,7 @@ def func_check_invite():
         time.sleep(1)
         response = requests.get(sync_url, headers=sync_headers)
         next_batch = sync_response["next_batch"]
-        sync_url = config.matrix_base_url + "/_matrix/client/r0/sync?since=" + next_batch
+        sync_url = config.matrix_base_url + sync_base_url + "&since=" + next_batch
         response = requests.get(sync_url, headers=sync_headers)
         next_batch = sync_response["next_batch"]
 
@@ -549,6 +561,113 @@ def func_container_check():
   else:
     return False    
 
+#################################################
+# get priv roomid with identifier               #
+# Explanation:                                  #
+# 50/50 % Chance it will find the private room, #
+# this function searches for a room with two    #
+# members, himself and the target user. But if  #
+# there is a group chat that also has these     #
+# conditions, it could return the group chat    #
+#################################################
+def func_find_roomid(user_identifiers):
+  global user_room_ids
+  user_room_ids = {}
+  
+  response = requests.get(config.matrix_base_url+"/_matrix/client/r0/joined_rooms",
+             headers={"Authorization": f"Bearer {access_token}","User-Agent": user_agent})
+  room_list = response.json().get("joined_rooms", [])
+  for user_identifier in user_identifiers:
+    for room_id in room_list:
+      response = requests.get(config.matrix_base_url+"/_matrix/client/r0/rooms/"+room_id+"/members",
+                 headers={"Authorization": f"Bearer {access_token}","User-Agent": user_agent})
+      if response.status_code == 200:
+        member_list = response.json().get("chunk", [])
+        
+        # Check if the room contains any of the specified users
+        for member in member_list:
+          if len(member_list) == 2 and member.get("state_key") in user_identifier:
+            # Get room information
+            response = requests.get(config.matrix_base_url+"/_matrix/client/r0/rooms/"+room_id+"/state",
+                                    headers={"Authorization": f"Bearer {access_token}","User-Agent": user_agent})
+            user_room_ids[user_identifier] = room_id
+            break
+      else:
+        func_write_to_log("Error retrieving member list for room "+room_id+": " +response.status_code, "ERROR", "func_find_roomid")
+
+
+  return user_room_ids
+
+######################################
+# merge old config file with new one #
+######################################
+def func_merge_configs():
+  global admin_dict_checked, commands_dict_checked, room_id
+  if merge_bool:
+    new_config = False
+    config_url = 'https://raw.githubusercontent.com/Wargamer-Senpai/teampy/main/config.py'
+    example_config_file = 'example_config.py'
+
+    # get a fresh config from github
+    response = requests.get(config_url)
+
+    if response.status_code == 200:
+      with open(example_config_file, 'wb') as file:
+        file.write(response.content)
+
+      with open(example_config_file, 'r') as file:
+        content = file.read()
+
+      import example_config
+
+      if func_container_check():
+        import configs.config as config
+      else: 
+        import config
+        
+      example_config_overview = dir(example_config)  
+      config_overview = dir(config)  
+
+      for variable_name in example_config_overview:
+        if not variable_name.startswith("__"): 
+          if variable_name in config_overview:
+            example_variable_value = getattr(example_config, variable_name)
+            variable_value = getattr(config, variable_name)
+            
+            variable_type = type(variable_value)
+
+            if variable_type == str or variable_type == bool or variable_type == list or variable_type == list:
+              if example_variable_value != variable_value:
+                if variable_type == str: 
+                  content = re.sub(f"{variable_name} = .*", f"{variable_name} = \"{variable_value}\"", content)
+                elif variable_type == bool or variable_type == list:
+                  content = re.sub(f"{variable_name} = .*", f"{variable_name} = {variable_value}", content)
+
+            elif variable_type == dict:
+              notify_admin_merge = True
+                
+          else:
+            func_write_to_log("New Variable Found: " + variable_name, "DEBUG", "func_merge_configs")
+            new_config = True
+
+      if new_config == True: 
+        with open(example_config_file, 'w', encoding="utf-8") as file:
+          file.write(content)
+        
+        os.rename("config.py", "config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py")
+        os.rename(example_config_file, "config.py")
+
+        if func_container_check():
+          import configs.config as config
+        else: 
+          import config
+        
+        if notify_admin_merge == True:
+          room_ids = func_find_roomid(config.bot_admin)
+          for user in room_ids:
+            room_id = room_ids[user]
+            func_send_message("The bot config has been merged with a newer version, please check the config on errors.")
+
 
 
 ############################
@@ -628,8 +747,10 @@ else:
   func_write_to_log("Error Login failed, Username or Password wrong %s" % response.text, "ERROR", "startup_login")
   exit(1)
 
+func_merge_configs() # merge new configs
+
 # prepare first sync
-sync_url = config.matrix_base_url + "/_matrix/client/r0/sync?3000"
+sync_url = config.matrix_base_url + sync_base_url
 sync_headers = {"Authorization": "Bearer " + access_token, "User-Agent": user_agent}
 next_batch = None
 
@@ -663,10 +784,14 @@ while True:
     func_check_client_update()
 
   next_batch = sync_response["next_batch"]
-  sync_url = config.matrix_base_url + "/_matrix/client/v3/sync?timeout=1000&since=" + next_batch
+  sync_url = config.matrix_base_url + sync_base_url + "&since=" + next_batch
   # make a request to the sync API to check for new events
-  response = requests.get(sync_url, headers=sync_headers)
-  
+  try:
+    response = requests.get(sync_url, headers=sync_headers)
+  except:
+    time.sleep(5)
+    response = requests.get(sync_url, headers=sync_headers)
+
   # check if the response was successful
   if response.status_code == 200:
     # parse the response JSON to extract any new events
@@ -769,9 +894,6 @@ while True:
                           matrix_friend_count = len(matrix_friends)
                       else:
                           func_write_to_log("Failed to retrieve friend list. %s" % response.text, "ERROR", "main_loop")
-
-                      #pretty print
-                      #print(json.dumps(matrix_friends,sort_keys=True, indent=4))
 
                       matrix_prepare_message = "Number of friends (all time): **" + str(matrix_friend_count) + "**"
                       for key in stat_dict:
@@ -1057,23 +1179,32 @@ while True:
                 
                 
 
-                elif matrix_received_message.startswith(config.command_prefix):
-                  func_send_message("command not found :thinking: ("+matrix_received_message+")\nif you need more info use `"+config.command_prefix+config.command_help+"`")
-                else :
-                  for root, dirs, files in os.walk("plugins"):
-                    if 'main.py' in files:
-                      main_script_path = os.path.join(root, 'main.py')
-                      module_name = os.path.basename(root)
+                else:
+                  plugin_check=0
+                  if config.plugins_on:
+                    if matrix_sender in config.bot_admin:
+                      plugin_rank="admin"
+                    else:
+                      plugin_rank="user"
+                    for subdir, _, _ in os.walk("plugins"):
+                      main_script_path = os.path.join(subdir, "main.py")
                       
-                      spec = importlib.util.spec_from_file_location(module_name, main_script_path)
-                      module = importlib.util.module_from_spec(spec)
-                      spec.loader.exec_module(module)
+                      if os.path.exists(main_script_path):
+                        try:
+                          plugin_output = subprocess.check_output(["python", main_script_path, matrix_received_message, matrix_sender, config.command_prefix,plugin_rank], text=True).strip()
+                          if plugin_output:
+                            plugin_check=1
+                            func_send_message(plugin_output)
+                            del plugin_output
+                            break
+                        except subprocess.CalledProcessError as e:
+                          func_write_to_log("There was an error executing a plugin, Path: " + str(main_script_path) + " Error: " + str(e), "ERROR", "main_loop")
 
-                      print(f"Executed Plugin {module_name}") #!TODO: change to logging
-                  func_write_to_log("chat message not directed to bot", "DEBUG", "main_loop")
-
+                  if matrix_received_message.startswith(config.command_prefix) and plugin_check == 0:
+                    func_send_message("command not found :thinking: ("+matrix_received_message+")\nif you need more info use `"+config.command_prefix+config.command_help+"`")
+               
                 # check for bad words
-                if config.bad_word_checks == True:
+                if config.bad_word_checks:
                   for word in bad_words:
                     if word in matrix_received_message:
                       matrix_received_message = "no you"
@@ -1083,8 +1214,11 @@ while True:
 
     else:
       time.sleep(1)
-      response = requests.get(sync_url, headers=sync_headers)
-
+      try:
+        response = requests.get(sync_url, headers=sync_headers)
+      except:
+        time.sleep(5)
+        response = requests.get(sync_url, headers=sync_headers)
     # check if he got invited into a new room 
     func_check_invite()
   else:
