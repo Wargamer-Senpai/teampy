@@ -7,7 +7,7 @@
 ▶️ <a href="https://github.com/Wargamer-Senpai/teampy/wiki#setup">Setup</a> |
 <a href="https://github.com/Wargamer-Senpai/teampy">GitHub</a> |
 <a href="https://github.com/Wargamer-Senpai/teampy/wiki">Documentation</a> |
-<a href="#roadmap">Roadmap</a>|
+<a href="#roadmap">Roadmap</a> |
 <a href="https://hub.docker.com/r/wargamersenpai/teampy">Docker Hub</a>
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/wargamer-senpai/teampy?color=blueviolet&logoColor=blueviolet&logo=github&style=flat-square)]()
@@ -38,10 +38,11 @@ create the local directorys for mounting into the container (logs is optional, b
 ```sh
 mkdir -p /opt/teampy/configs
 mkdir -p /opt/teampy/logs
+mkdir -p /opt/teampy/plugins
 ``` 
 run the container
 ```sh 
-docker run -d --name teampy --restart on-failure -v /opt/teampy/configs:/opt/teampy/configs -v /opt/teampy/logs:/opt/teampy/logs wargamersenpai/teampy:latest
+docker run -d --name teampy --restart on-failure -v /opt/teampy/configs:/opt/teampy/configs -v /opt/teampy/plugins:/opt/teampy/plugins -v /opt/teampy/logs:/opt/teampy/logs wargamersenpai/teampy:latest
 ```
 now edit the config in the mounted directory 
 ```
@@ -65,6 +66,7 @@ create the local directorys for mounting into the container (logs is optional, b
 ```sh
 mkdir -p /opt/teampy/configs
 mkdir -p /opt/teampy/logs
+mkdir -p /opt/teampy/plugins
 ``` 
 create a `docker-compose.yml` with following content
 ```yml
@@ -77,6 +79,7 @@ services:
     volumes:
       - /opt/teampy/configs:/opt/teampy/configs
       - /opt/teampy/logs:/opt/teampy/logs
+      - /opt/teampy/plugins:/opt/teampy/plugins
 ```
 
 now you can run docker-compose (in the same directory where the yml file is located)
@@ -186,11 +189,13 @@ General Features<br>
 |adding a default giphy api key|done|✅|
 |adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|
 |gather stats how much interaction the bot has|partly finished|✅|
+|support external plugins/scripts|finished|✅|
+|merge new configs|WIP/finished|✅|
 |adding a check for new version of the teamspeak client|in Work/partly finished|⬜️|
 |adding the current connected teamspeak server to status|planned|⬜️|
 |welcome message for new joined user in rooms|planned|⬜️|
 |self health check and (optional auto notify admins)|partly finished|⬜️|
-|adding a possibility for administrator to interact with oss or execute certain commands|planned|⬜️|
+|adding a possibility for administrator to interact with OS or execute certain commands|planned|⬜️|
 |change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|
 
 <!--|⬜️|✅|-->
