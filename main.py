@@ -34,9 +34,13 @@ import logging
 import datetime
 import inspect
 import re
+import shutil
 
-# import config.py
-import config 
+try:
+  # import config.py
+  import config 
+except:
+  DUMMY="DUMMY"
 # import bad_words.py
 from modules.bad_words import * 
 # import version.py file
@@ -97,8 +101,6 @@ commands_dict_checked = False
 admin_dict_checked = False
 # response when searching for a user/users
 user_room_ids = {}
-# contains the boolean if configs should be merged
-merge_bool = config.merge_config
 
 # description for stats
 stats_description = {
@@ -603,6 +605,7 @@ def func_find_roomid(user_identifiers):
 ######################################
 def func_merge_configs():
   global admin_dict_checked, commands_dict_checked, room_id
+
   if merge_bool:
     new_config = False
     config_url = 'https://raw.githubusercontent.com/Wargamer-Senpai/teampy/main/config.py'
@@ -653,11 +656,14 @@ def func_merge_configs():
       if new_config == True: 
         with open(example_config_file, 'w', encoding="utf-8") as file:
           file.write(content)
-        
-        os.rename("config.py", "config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py")
+        if func_container_check():
+          shutil.move(os.path.join("configs","config.py"), os.path.join("configs","config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py"))
+        else: 
+          os.rename("config.py", "config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py")
         os.rename(example_config_file, "config.py")
 
         if func_container_check():
+          shutil.move("config.py", os.path.join("configs","config.py"))
           import configs.config as config
         else: 
           import config
@@ -677,25 +683,32 @@ def func_merge_configs():
 ############################
 if func_container_check():
   # if running inside a container
-  func_write_to_log("!! running inside a container !!", "INFO", "startup_container_check")
   source_config = "/opt/teampy/config.py"
   target_config = "/opt/teampy/configs/config.py"
   if not os.path.exists(target_config):
     with open(source_config, 'rb') as src_file:
         with open(target_config, 'wb') as dest_file:
             dest_file.write(src_file.read())
-    func_write_to_log("config.py copied successfully!", "INFO", "startup_container_check")
-  else:
-    func_write_to_log("config.py already exists!", "INFO", "startup_container_check")
+    # func_write_to_log("config.py copied successfully!", "INFO", "startup_container_check")
+    # func_write_to_log("config.py already exists!", "INFO", "startup_container_check")
 
   # import config file from persistent folder
+  
   import configs.config as config
+  func_write_to_log("!! running inside a container !!", "INFO", "startup_container_check")
   # change folders for files that needs to be persistent
   notify_file = os.path.join(main_script_path,"configs","notify.txt")
   stats_file = os.path.join(main_script_path,"configs", "stats.txt")
   
 else:
   func_write_to_log("not running inside a container", "INFO", "startup_container_check")
+
+# contains the boolean if configs should be merged
+try:
+  merge_bool = config.merge_config
+except AttributeError:
+  merge_bool = True
+
 
 
 if not config.matrix_username or not config.matrix_password:
