@@ -1,3 +1,4 @@
+# coding=utf-8
 # This is an example plugin, so its better to understand the way the bot handles plugins/external scripts.
 # So make sure youve named this file main.py and put it in its own folder in the plugins directory.
 #
