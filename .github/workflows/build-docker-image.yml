@@ -20,6 +20,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Debug
+        run: |
+          echo "Value of GITHUB_REF: $GITHUB_REF"
+
       - name: Extract tag name
         id: extract_tag
         run: echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
