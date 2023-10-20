@@ -60,8 +60,15 @@ matrix_update_message = "<@_|everyone> it looks like a new update arrived, Versi
 
 # enable plugins
 # in the folder plugins, here can be put addiotonal code
+# example can be found here: https://github.com/Wargamer-Senpai/teampy/tree/main/plugins/example-plugin
 # Default: plugins_on = False 
 plugins_on = False
+
+# if a new config is available it will auto merge these.
+# this feature is experimental and could cause problems, when merging.
+# the admin gets automatically notified if a merge happend, so he can check the file
+# and the old config kept as a backup
+merge_config = True
 
 
 # command prefix 
