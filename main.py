@@ -659,8 +659,8 @@ def func_merge_configs():
         if func_container_check():
           shutil.move(os.path.join("configs","config.py"), os.path.join("configs","config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py"))
         else: 
-          os.rename("config.py", "config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py")
-        os.rename(example_config_file, "config.py")
+          os.rename(os.path.join(main_script_path,"config.py"), "config_backup_"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')+".py")
+        os.rename(os.path.join(main_script_path,example_config_file), os.path.join(main_script_path,"config.py"))
 
         if func_container_check():
           shutil.move("config.py", os.path.join("configs","config.py"))
