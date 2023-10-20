@@ -606,7 +606,7 @@ def func_merge_configs():
   if merge_bool:
     new_config = False
     config_url = 'https://raw.githubusercontent.com/Wargamer-Senpai/teampy/main/config.py'
-    example_config_file = 'example_config.py'
+    example_config_file = os.path.join(main_script_path,'example_config.py')
 
     # get a fresh config from github
     response = requests.get(config_url)
