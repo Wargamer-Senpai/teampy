@@ -12,7 +12,7 @@ RUN mkdir -p /opt/teampy/configs && \
 COPY ./main.py /opt/teampy/
 COPY ./config.py /opt/teampy/config.py
 COPY ./modules/* /opt/teampy/modules
-COPY ./plugins/* /opt/teampy/plugins
+COPY ./plugins/ /opt/teampy/plugins
 
 RUN apk add --no-cache python3 && \
     /usr/bin/python3 -m ensurepip && \
