@@ -1035,7 +1035,10 @@ while True:
                 elif config.command_prefix + config.command_admin_reload == matrix_received_message:
                   if config.admin_commands_overview[config.command_admin_reload]["command_enabled"] == True:
                     if matrix_sender in config.bot_admin:
-                      importlib.reload(config)
+                      if func_container_check:
+                        importlib.reload(configs.config)
+                      else:
+                        importlib.reload(config)
                       func_set_status()
                       func_send_message("Reloaded Config")
                     else:
