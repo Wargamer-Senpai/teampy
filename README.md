@@ -48,7 +48,7 @@ now edit the config in the mounted directory
 ```
 vi /opt/teampy/configs/config.py
 ```
-enter the matrix username and password (you can get these with [TS5 Extractor](https://github.com/Gamer08YT/TS5Extractor))
+enter the matrix username and password (you can get these with https://chat.ts3index.com/)
 ```
 ...
 matrix_username = aefaefaefaefaefa354354354354===
@@ -90,7 +90,7 @@ after that, edit the config in the mounted directory
 ```
 vi /opt/teampy/configs/config.py
 ```
-enter the matrix username and password (you can get these with [TS5 Extractor](https://github.com/Gamer08YT/TS5Extractor))
+enter the matrix username and password (you can get these with https://chat.ts3index.com/)
 ```
 ...
 matrix_username = aefaefaefaefaefa354354354354===
@@ -132,7 +132,7 @@ docker start teampy
   ``` 
 - Open `config.py`
   - Required:
-    - Enter matrix username and password (get these with the [TS5 Extractor](https://github.com/Gamer08YT/TS5Extractor))
+    - Enter matrix username and password (get these with the https://chat.ts3index.com/)
 
   - Optional:
     - enter giphy api (can be optained freely from [developers giphy](https://developers.giphy.com/dashboard/))
