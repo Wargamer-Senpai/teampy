@@ -3,6 +3,7 @@ Description=teampy - teamspeak Matrix Chat Bot
 After=network.target
 
 [Service]
+WorkingDirectory=/opt/teampy/
 ExecStart=/usr/bin/python3 /opt/teampy/main.py
 Restart=on-failure
 RestartSec=5s
