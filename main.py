@@ -553,6 +553,12 @@ def func_bot_restart():
     func_write_to_log("Couldnt detect OS for proper restart", "CRITICAL", current_function)
     exit(255)
 
+#########################################################################
+# used when inside container, touch file to refresh change date of file #
+#########################################################################
+def func_touch_file(filename):
+    with open(filename, 'a'):
+        os.utime(filename, None)
 
 ##############################################
 # check if bot is running inside a container #
@@ -789,7 +795,10 @@ func_notify_rooms_get()
 func_write_to_log("Startup complete...", "INFO", "startup_finished")
 while True:
   time.sleep(1)
+  if func_container_check():
+    func_touch_file("check_container")
 
+    
   # check for new update of ts client
   elapsed_time = time.time() - start_time
   if elapsed_time >= interval: 
