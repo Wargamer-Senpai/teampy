@@ -28,7 +28,7 @@ def rotate_logs(log_file, backups=7):
     os.rename(log_file, f"{log_file}.1")
 
 
-def func_write_to_log(log_message, log_level, log_function, log_file=os.path.join(os.path.abspath(__file__),"..","..","logs","bot.log"), max_size_mb=5, backups=7):
+def func_write_to_log(log_message, log_level, log_function, log_file=os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","logs","bot.log"), max_size_mb=5, backups=7):
   """writes log messages to a file and prints them to the console if debug mode is enabled
 
   Args:
