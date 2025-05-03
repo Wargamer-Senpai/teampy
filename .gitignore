@@ -1,2 +1,11 @@
-__pycache__
-zip build
+__pycache__/
+__pycache__/config.cpython-39.pyc
+__pycache__/bad_words.cpython-39.pyc
+modules/stats.txt
+logs/output*
+logs/*.log
+modules/notify.txt
+data/*.txt
+example_config.py
+config.py
+check_container
