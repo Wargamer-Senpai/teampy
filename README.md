@@ -64,7 +64,7 @@ docker-compose up -d
 ## Methode 2: Manual Installation
 ### Requirments 
 - Linux or Windows (works on both)
-- Python 3.5 =<
+- Python 3.7 =<
 - module requests required:  
   ```sh
   pip install requests 
