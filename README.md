@@ -136,7 +136,6 @@ OS Features<br>
 |---|---|---|
 |adding a setup.sh for easier setup on linux|planned|⬜️|
 |adding systemd service |done|✅|
-|adding a .exe for windows for easier execution|planned|⬜️|
 |adding a container image|done|✅|
 <br>
 
@@ -145,13 +144,12 @@ General Features<br>
 |---|---|---|
 |adding a default giphy api key|done|✅|
 |adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|
-|gather stats how much interaction the bot has|partly finished|✅|
+|gather stats how much interaction the bot has|finished|✅|
 |support external plugins/scripts|finished|✅|
-|merge new configs|WIP/finished|✅|
 |adding a check for new version of the teamspeak client|in Work/partly finished|⬜️|
 |adding the current connected teamspeak server to status|planned|⬜️|
 |welcome message for new joined user in rooms|planned|⬜️|
-|self health check and (optional auto notify admins)|partly finished|⬜️|
+|self health check |finished (basic)|✅|
 |adding a possibility for administrator to interact with OS or execute certain commands|planned|⬜️|
 |change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|
 
