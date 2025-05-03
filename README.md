@@ -61,7 +61,7 @@ docker-compose up -d
 ```
 <br><br><br>
 
-## Methode 2: Manuell Installation
+## Methode 2: Manual Installation
 ### Requirments 
 - Linux or Windows (works on both)
 - Python 3.5 =<
