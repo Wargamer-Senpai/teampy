@@ -3,7 +3,32 @@ import datetime
 import os
 import config
 
-def func_write_to_log(log_message, log_level, log_function, log_file=os.path.join(os.path.abspath(__file__),"..","..","logs","bot.log")):
+def rotate_logs(log_file, backups=7):
+  """
+  Rotate log files by renaming existing backups and deleting the oldest.
+
+  Args:
+    log_file (str): Path to the main log file.
+    backups (int): Number of backup files to keep.
+  """
+  # Remove the oldest backup if it exists
+  oldest = f"{log_file}.{backups}"
+  if os.path.exists(oldest):
+    os.remove(oldest)
+
+  # Shift backups: .6 -> .7, .5 -> .6, ..., .1 -> .2
+  for i in range(backups - 1, 0, -1):
+    src = f"{log_file}.{i}"
+    dst = f"{log_file}.{i+1}"
+    if os.path.exists(src):
+      os.rename(src, dst)
+
+  # Rename current log to .1
+  if os.path.exists(log_file):
+    os.rename(log_file, f"{log_file}.1")
+
+
+def func_write_to_log(log_message, log_level, log_function, log_file=os.path.join(os.path.abspath(__file__),"..","..","logs","bot.log"), max_size_mb=5, backups=7):
   """writes log messages to a file and prints them to the console if debug mode is enabled
 
   Args:
@@ -12,6 +37,10 @@ def func_write_to_log(log_message, log_level, log_function, log_file=os.path.joi
       log_function (str): name of the function that is logging the message
       log_file (str, optional): the log file, defaults to os.path.join(os.path.abspath(__file__),"..","..","logs","bot.log").
   """
+  # Rotate logs only if size exceeds threshold
+  if os.path.exists(log_file) and os.path.getsize(log_file) >= max_size_mb * 1024 * 1024:
+    rotate_logs(log_file, backups)
+
   # fallback if conf_log_level has been wrongly configured
   config_log_level = config.log_level
   if not config_log_level in ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]:
