@@ -1,7 +1,7 @@
 # Matrix Homeserver URL
 matrix_base_url = "https://chat.teamspeak.com"
 
-# Matrix User Credentials, get via TS5Extractor (https://github.com/Gamer08YT/TS5Extractor)
+# Matrix User Credentials, get via https://chat.ts3index.com/
 # Recommended to use a second account, which isnt that important
 # Example:
 # matrix_username = aefaefaefaefaefa354354354354===
@@ -29,8 +29,7 @@ giphy_api_key="DNfeltInmrTesyYnk02MqdrE5LB2FCpW"
 
 
 # set avatar url here
-# WIP, not working 
-#avatar_url = "currently broken (ㆆ_ㆆ)"
+#avatar_url = "currently not possible...."
 
 # set status text
 status_text = "✨ vibing ヾ(•ω•`)o ✨" 
@@ -47,11 +46,6 @@ presence_state = "online"
 # stats_visible = "public" or "admins"
 stats_visible = "public"
 
-# check if in conversation is a bad word
-# if set to True, the bot will search out an gif, with the context of "no you"
-# only works if gihpy api is not empty
-bad_word_checks = False
-
 # set message when the bot detects a new version 
 # you can use <@_|everyone> to ping everyone
 # the new found version will always be added later on, when sending the message, it will look like this:
@@ -63,12 +57,6 @@ matrix_update_message = "<@_|everyone> it looks like a new update arrived, Versi
 # example can be found here: https://github.com/Wargamer-Senpai/teampy/tree/main/plugins/example-plugin
 # Default: plugins_on = False 
 plugins_on = False
-
-# if a new config is available it will auto merge these.
-# this feature is experimental and could cause problems, when merging.
-# the admin gets automatically notified if a merge happend, so he can check the file
-# and the old config kept as a backup
-merge_config = True
 
 
 # command prefix 
@@ -134,9 +122,14 @@ admin_commands_overview = {
 
 
 
-#
 # set log level 
-#
 # Possible values: CRITICAL, ERROR, WARNING, INFO, DEBUG
 # default and recommended: "INFO" 
 log_level="INFO"
+
+
+# set debug mode
+# if set to True, the bot will print out all log messages to the console
+# and not only to the log file
+# Only for development purposes, not recommended for daily usage
+debug_mode = False

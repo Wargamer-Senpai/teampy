@@ -1,64 +1,93 @@
 #!/bin/bash
-#
-#
-# this is a script to watch over the bot, the bot for some reason crashes/freezes inside a container.
-# 
+
+# Path to the file holding the current bot PID
+PID_FILE="/opt/teampy/bot.pid"
+# File the bot must touch to signal liveness
+CHECK_FILE="/opt/teampy/check_container"
+# Command to launch the bot
+BOT_CMD="/usr/bin/python3 /opt/teampy/main.py"
+# How long to sleep after starting the bot before monitoring
+SLEEP_AFTER_START=60
+# Monitoring interval in seconds
+SLEEP_INTERVAL=1
+
+
+# Read initial state
+CONTAINER_BOOL="${CONTAINER_BOOL:-False}"
 BOT_PID=0
 
-
-# function kill_container(){
-#   exit 69
-# }
-
-function start_bot(){
-  if [[ $BOT_PID -ne 0 ]]; then
-    kill -9 $BOT_PID
-  fi
-
-  /usr/bin/python3 /opt/teampy/main.py &
-  BOT_PID=$!
-  /bin/sleep 60
+# Write the current PID into $PID_FILE
+function write_pid() {
+  echo "$BOT_PID" > "$PID_FILE"
 }
 
+# Read the PID from $PID_FILE (or set to 0 if missing)
+function read_pid() {
+  if [[ -f "$PID_FILE" ]]; then
+    BOT_PID=$(<"$PID_FILE")
+  else
+    BOT_PID=0
+  fi
+}
 
-if [[ $CONTAINER_BOOL == "True" ]]; then
-  COUNT_RAM_FAILS=0
-  echo "Started Container $(date)"
-  start_bot
+# (Re)start the bot, kill old PID if necessary,
+# then write the new PID to PID_FILE
+function start_bot() {
+  if [[ $BOT_PID -ne 0 ]]; then
+    kill -9 "$BOT_PID" 2>/dev/null || true
+    wait "$BOT_PID" 2>/dev/null || true
+  fi
 
-  # CHECK RAM
+  $BOT_CMD &
+  BOT_PID=$!
+  write_pid
+
+  sleep $SLEEP_AFTER_START
+}
+
+# Main monitoring loop
+function monitor_bot() {
   while true; do
-    # check change timestamp
-    TIMESTAMP_FILE=$(stat check_container | grep Change | awk -F: '{print $4}' | awk -F. '{print $1}')
-    TIMESTAMP_DATE=$(date | awk -F: '{print $3}' | awk '{print $1}')
-    TIMESTAMP_DIFF=$((10#$TIMESTAMP_DATE-10#$TIMESTAMP_FILE))
+    read_pid
 
-    # if time difrence is greater then 10 seconds kill, #0 casts the number to be an INT not Octal
-    if [[ ${TIMESTAMP_DIFF#0} -gt 10 ]]; then
-      echo '[ERROR] Bot didnt touched file, killing the bot *bonk*'
-      start_bot
+    # If the process isn’t alive, check its exit code
+    if ! kill -0 "$BOT_PID" 2>/dev/null; then
+      wait "$BOT_PID" 2>/dev/null
+      STATUS=$?
+      if [[ $STATUS -eq 0 ]]; then
+        echo "[INFO] Bot (PID $BOT_PID) exited cleanly. Exiting watchdog at $(date)"
+        exit 0
+      else
+        echo "[ERROR] Bot (PID $BOT_PID) exited with status $STATUS. Restarting at $(date)"
+        start_bot
+        continue
+      fi
     fi
 
-    # get ram usage
-    # shellcheck disable=SC2062
-    RAM_USAGE=$(top -n 1 | grep python[3] | awk '{print $8}') 
-
-    # check if ram is 0% or empty, if true count it how many time
-    if [[ "$RAM_USAGE" == "0%" ]]; then
-      COUNT_RAM_FAILS=$((COUNT_RAM_FAILS+1))
+    # Check that the bot has updated its checkpoint file recently
+    if [[ -f "$CHECK_FILE" ]]; then
+      FILE_TS=$(stat -c %Y "$CHECK_FILE")
+      NOW_TS=$(date +%s)
+      DIFF=$((NOW_TS - FILE_TS))
+      if (( DIFF > 60 )); then
+        echo "[ERROR] $CHECK_FILE untouched for $DIFF sec. Restarting at $(date)"
+        start_bot
+        continue
+      fi
     else
-      COUNT_RAM_FAILS=0
-    fi 
-
-    if [[ $COUNT_RAM_FAILS -eq 50 ]]; then
-      echo '[ERROR] Bot didnt used ram for a long time, killing the bot *bonk*'
-      start_bot
-    fi
-    if [[ "$RAM_USAGE" == "" || "$RAM_USAGE" == " " || -z "$RAM_USAGE" ]]; then
-      echo '[ERROR] Where is the PID, killing the bot *bonk*'
-      start_bot
+      echo "[WARN] Check file $CHECK_FILE missing."
     fi
 
-    /bin/sleep 1
+    sleep $SLEEP_INTERVAL
   done
+}
+
+# Entry point
+if [[ "$CONTAINER_BOOL" == "True" ]]; then
+  echo "Started watchdog at $(date)"
+  start_bot
+  monitor_bot
+else
+  echo "CONTAINER_BOOL is not True; exiting."
+  exit 1
 fi

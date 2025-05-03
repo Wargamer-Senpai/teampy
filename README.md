@@ -28,46 +28,13 @@ You can test the bot yourself, just add `teampy@myteamspeak.com` to your contact
 <br><br><br>
 ![Unbenannt_1](https://github.com/Wargamer-Senpai/teampy/assets/77844672/dd691471-e496-4792-8bb6-ae2948275d68)
 ***
-<a href="#methode-1-docker-run">Methode 1: docker run</a><br>
-<a href="#methode-2-docker-compose">Methode 2: docker-compose</a><br>
-<a href="#methode-3-manuell-installation">Methode 3: Manuell Installation</a><br>
+<a href="#methode-1-docker-compose">Methode 2: docker-compose</a><br>
+<a href="#methode-2-manuell-installation">Methode 3: Manuell Installation</a><br>
 
-<br><br><br>
-## Methode 1: docker run
-create the local directorys for mounting into the container (logs is optional, but recommended)
-```sh
-mkdir -p /opt/teampy/configs
-mkdir -p /opt/teampy/logs
-mkdir -p /opt/teampy/plugins
-``` 
-run the container
-```sh 
-docker run -d --name teampy --restart on-failure -v /opt/teampy/configs:/opt/teampy/configs -v /opt/teampy/plugins:/opt/teampy/plugins -v /opt/teampy/logs:/opt/teampy/logs wargamersenpai/teampy:latest
-```
-now edit the config in the mounted directory 
-```
-vi /opt/teampy/configs/config.py
-```
-enter the matrix username and password (you can get these with https://chat.ts3index.com/)
-```
-...
-matrix_username = aefaefaefaefaefa354354354354===
-matrix_password = JkFpIopKKKtdf55uimne69
-...
-```
-now you can start the container 
-```sh
-docker start teampy
-```
 
-<br><br><br>
-## Methode 2: docker-compose
-create the local directorys for mounting into the container (logs is optional, but recommended)
-```sh
-mkdir -p /opt/teampy/configs
-mkdir -p /opt/teampy/logs
-mkdir -p /opt/teampy/plugins
-``` 
+<br><br>
+## Methode 1: docker-compose
+
 create a `docker-compose.yml` with following content
 ```yml
 version: '3'
@@ -76,9 +43,15 @@ services:
     image: wargamersenpai/teampy:latest
     container_name: teampy
     restart: on-failure
+    environment:
+      # enter the matrix username and password (you can get these with https://chat.ts3index.com/)
+      # the plain text username and password wont work
+      MATRIX_USERNAME: "your-matrix-user-id" 
+      MATRIX_PASSWORD: "your-matrix-password"
+      BOT_ADMIN: "@exampleasdfasdf===:chat.teamspeak.com" # get this ID with asking the bot !whoami
     volumes:
-      - /opt/teampy/configs:/opt/teampy/configs
-      - /opt/teampy/logs:/opt/teampy/logs
+      - /opt/teampy/data:/opt/teampy/data
+      - /opt/teampy/logs:/opt/teampy/logs # optional
       - /opt/teampy/plugins:/opt/teampy/plugins
 ```
 
@@ -86,25 +59,9 @@ now you can run docker-compose (in the same directory where the yml file is loca
 ```
 docker-compose up -d
 ```
-after that, edit the config in the mounted directory 
-```
-vi /opt/teampy/configs/config.py
-```
-enter the matrix username and password (you can get these with https://chat.ts3index.com/)
-```
-...
-matrix_username = aefaefaefaefaefa354354354354===
-matrix_password = JkFpIopKKKtdf55uimne69
-...
-```
-now you can start the container 
-```sh
-docker start teampy
-```
-
 <br><br><br>
 
-## Methode 3: Manuell Installation
+## Methode 2: Manuell Installation
 ### Requirments 
 - Linux or Windows (works on both)
 - Python 3.5 =<
@@ -179,7 +136,6 @@ OS Features<br>
 |---|---|---|
 |adding a setup.sh for easier setup on linux|planned|⬜️|
 |adding systemd service |done|✅|
-|adding a .exe for windows for easier execution|planned|⬜️|
 |adding a container image|done|✅|
 <br>
 
@@ -188,13 +144,12 @@ General Features<br>
 |---|---|---|
 |adding a default giphy api key|done|✅|
 |adding administration features <br>(start/stop/restart bot via command, with admin whitelist)|done|✅|
-|gather stats how much interaction the bot has|partly finished|✅|
+|gather stats how much interaction the bot has|finished|✅|
 |support external plugins/scripts|finished|✅|
-|merge new configs|WIP/finished|✅|
 |adding a check for new version of the teamspeak client|in Work/partly finished|⬜️|
 |adding the current connected teamspeak server to status|planned|⬜️|
 |welcome message for new joined user in rooms|planned|⬜️|
-|self health check and (optional auto notify admins)|partly finished|⬜️|
+|self health check |finished (basic)|✅|
 |adding a possibility for administrator to interact with OS or execute certain commands|planned|⬜️|
 |change name over command<br> (as soons teamspeak supports name changes)|currently not Possible|⬜️|
 

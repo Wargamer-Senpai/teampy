@@ -1,2 +1,10 @@
-__pycache__
-zip build
+__pycache__/
+modules/stats.txt
+logs/output*
+zip build/
+logs/*.log
+modules/notify.txt
+data/*.txt
+example_config.py
+config.py
+check_container
