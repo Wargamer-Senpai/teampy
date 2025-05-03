@@ -347,7 +347,12 @@ def func_dispatch_command(matrix_received_message, matrix_sender, matrix_room, e
   # If the message starts with the command prefix but doesn't match any command,
   # send a "command not found" message.
   if matrix_received_message.startswith(config.command_prefix):
-    if config.plugins_on and not func_handle_plugins(matrix_sender,config.bot_admin,main_script_path,matrix_received_message,config.command_prefix):
+    if config.plugins_on:
+      plugin_output = func_handle_plugins(matrix_sender, config.bot_admin, main_script_path, matrix_received_message, config.command_prefix)
+      if plugin_output:
+        # plugin_output is a non-empty string → send it back to the room
+        func_send_message(config.matrix_base_url, access_token, user_agent,matrix_room, plugin_output, event_id, stat_dict)
+        return True
       func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, f"Command not found :thinking: ({matrix_received_message})\nif you need more info use `{config.command_prefix+config.command_help}`", event_id, stat_dict)
       return False 
 

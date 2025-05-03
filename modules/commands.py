@@ -238,8 +238,10 @@ def func_handle_plugins(matrix_sender,bot_admin,main_script_path,matrix_received
     plugin_path = os.path.join(subdir, "main.py")
     if os.path.exists(plugin_path):
       try:
-        plugin_output = subprocess.check_output(["python", plugin_path, matrix_received_message, matrix_sender, command_prefix,plugin_rank], text=True).strip()
+        plugin_output = subprocess.check_output(["python3", plugin_path, matrix_received_message, matrix_sender, command_prefix,plugin_rank], text=True).strip()
         if plugin_output:
           return plugin_output
+        else:
+          return None
       except subprocess.CalledProcessError as e:
         func_write_to_log("There was an error executing a plugin, Path: " + str(plugin_path) + " Error: " + str(e), "ERROR", "func_handle_plugins")
