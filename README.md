@@ -48,7 +48,7 @@ services:
       # the plain text username and password wont work
       MATRIX_USERNAME: "your-matrix-user-id" 
       MATRIX_PASSWORD: "your-matrix-password"
-      BOT_ADMIN: "@exampleasdfasdf===:chat.teamspeak.com" # get this ID with asking the bot !whoami
+      BOT_ADMIN: "@exampleasdfasdf===:chat.teamspeak.com,@secondasdfasdf===:chat.teamspeak.com" # get this ID with asking the bot !whoami
     volumes:
       - /opt/teampy/data:/opt/teampy/data
       - /opt/teampy/logs:/opt/teampy/logs # optional
