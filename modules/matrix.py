@@ -84,7 +84,7 @@ def func_send_message(matrix_base_url,sync_headers, matrix_room, matrix_send_mes
       func_write_to_log("Message sent successfully! (room "+matrix_room+")", "INFO", current_function)
       func_add_stats("messages_send_count",stat_dict)
     else:
-      func_write_to_log("Error sending message to Matrix: %s" % response.text, "ERROR", current_function)
+      func_write_to_log(f"Error sending message {matrix_send_message} to Matrix: {response.text}", "ERROR", current_function)
       time.sleep(2)
 
     # set message to read, only works in privat chat
@@ -410,6 +410,7 @@ def func_get_room_join_rule(matrix_base_url, matrix_room, sync_headers):
   else:
     func_write_to_log(f"Failed to get join rules for {matrix_room}: {response.status_code} - {response.text}", "ERROR", "get_room_join_rule")
     return None
+
 
 
 # def func_set_avatar():
