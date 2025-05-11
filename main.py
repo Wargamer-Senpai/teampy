@@ -295,6 +295,25 @@ def func_create_command_handlers(matrix_received_message,matrix_room,event_id,ma
         "stats_description": stats_description
       }
     },
+    config.command_admin_list_banned_users: {
+      "command": func_handle_admin_list_banned_users,
+      "stat": "admin_command_count",
+      "params": {
+        "matrix_base_url": config.matrix_base_url, 
+        "matrix_room": matrix_room, 
+        "sync_headers": sync_headers
+      }
+    },
+    config.command_admin_unban_user: {
+      "command": func_handle_admin_unban_user,
+      "stat": "admin_command_count",
+      "params": {
+        "matrix_base_url": config.matrix_base_url, 
+        "matrix_room": matrix_room, 
+        "matrix_received_message": matrix_received_message, 
+        "sync_headers": sync_headers
+      }
+    },
     config.command_admin_version: {
       "command": func_handle_admin_version,
       "stat": "admin_command_count",
