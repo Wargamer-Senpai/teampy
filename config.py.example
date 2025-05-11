@@ -46,6 +46,14 @@ presence_state = "online"
 # stats_visible = "public" or "admins"
 stats_visible = "public"
 
+# set the amount of rule violations a user can make before getting banned/kicked
+warn_limit = 5
+
+# set the action that should be taken when the user reaches the warn_limit
+# possible values: "ban" or "kick"
+# if no valid value is parsed it will revert to ban
+warn_action="ban"
+
 # set message when the bot detects a new version 
 # you can use <@_|everyone> to ping everyone
 # the new found version will always be added later on, when sending the message, it will look like this:
@@ -81,6 +89,7 @@ command_admin_help = command_base_admin + "help"
 command_admin_status = command_base_admin + "status"
 command_admin_version = command_base_admin + "version"
 command_admin_health = command_base_admin + "health"
+command_admin_moderation_toggle = command_base_admin + "toggle-mod"
 command_admin_stop = command_base_admin + "stop"
 command_admin_restart = command_base_admin + "restart"
 command_admin_leave = command_base_admin + "leave-room"
@@ -111,6 +120,7 @@ admin_commands_overview = {
     command_admin_help: {"description": "display this admin help", "command_enabled": True},
     command_admin_version: {"description": "display version of bot, and checks for new version", "command_enabled": True},
     command_admin_health: {"description": "checks health of bot, if there is a problem it hopefully will display it", "command_enabled": True},
+    command_admin_moderation_toggle: {"description": "toggles bot moderation for the room the command in which it was specified", "command_enabled": True},
     command_admin_stop: {"description": "stops the bot", "command_enabled": True},
     command_admin_restart: {"description": "restarts the bot", "command_enabled": True},
     command_admin_leave: {"description": "tells the bot to leave the current room", "command_enabled": True},
