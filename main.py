@@ -231,8 +231,7 @@ def func_create_command_handlers(matrix_received_message,matrix_room,event_id,ma
       "params": {
         "matrix_base_url": config.matrix_base_url, 
         "matrix_room": matrix_room, 
-        "access_token": access_token, 
-        "user_agent": user_agent,
+        "sync_headers": sync_headers,
         "matrix_self": matrix_self,
         "matrix_room_name": matrix_room_name
       }
@@ -261,8 +260,7 @@ def func_create_command_handlers(matrix_received_message,matrix_room,event_id,ma
       "stat": "admin_command_count",
       "params": {
         "matrix_base_url": config.matrix_base_url,
-        "access_token": access_token,
-        "user_agent": user_agent,
+        "sync_headers": sync_headers,
         "matrix_room": matrix_room,
         "event_id": event_id,
         "stat_dict": stat_dict
@@ -273,8 +271,7 @@ def func_create_command_handlers(matrix_received_message,matrix_room,event_id,ma
       "stat": "admin_command_count",
       "params": {
         "matrix_base_url": config.matrix_base_url,
-        "access_token": access_token,
-        "user_agent": user_agent,
+        "sync_headers": sync_headers,
         "matrix_room": matrix_room,
         "event_id": event_id,
         "stat_dict": stat_dict,
@@ -335,7 +332,7 @@ def func_dispatch_command(matrix_received_message, matrix_sender, matrix_room, e
          ) or (command in config.admin_commands_overview and config.admin_commands_overview[command]["command_enabled"]):
         if matrix_received_message.startswith(config.command_prefix + config.command_base_admin):
           if not matrix_sender in config.bot_admin:
-            func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, rank_error_message, event_id, stat_dict)
+            func_send_message(config.matrix_base_url,sync_headers, matrix_room, rank_error_message, event_id, stat_dict)
             return False 
             
         # Get any additional parameters (default to an empty dict)
@@ -345,15 +342,15 @@ def func_dispatch_command(matrix_received_message, matrix_sender, matrix_room, e
         func_add_stats(data["stat"],stat_dict)
         if result:
           if result != "left room":
-            func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, result, event_id, stat_dict)
+            func_send_message(config.matrix_base_url,sync_headers, matrix_room, result, event_id, stat_dict)
             return True 
           else: 
             return True
         else: 
-          func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, "Command didnt respond or returned anything - but i think it was successfull :eyes:", event_id, stat_dict)
+          func_send_message(config.matrix_base_url,sync_headers, matrix_room, "Command didnt respond or returned anything - but i think it was successfull :eyes:", event_id, stat_dict)
           return True
       else:
-        func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, command_disabled_message, event_id, stat_dict)
+        func_send_message(config.matrix_base_url,sync_headers, matrix_room, command_disabled_message, event_id, stat_dict)
         return False 
 
   # If the message starts with the command prefix but doesn't match any command,
@@ -363,9 +360,9 @@ def func_dispatch_command(matrix_received_message, matrix_sender, matrix_room, e
       plugin_output = func_handle_plugins(matrix_sender, config.bot_admin, main_script_path, matrix_received_message, config.command_prefix)
       if plugin_output:
         # plugin_output is a non-empty string → send it back to the room
-        func_send_message(config.matrix_base_url, access_token, user_agent,matrix_room, plugin_output, event_id, stat_dict)
+        func_send_message(config.matrix_base_url,sync_headers,matrix_room, plugin_output, event_id, stat_dict)
         return True
-      func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, f"Command not found :thinking: ({matrix_received_message})\nif you need more info use `{config.command_prefix+config.command_help}`", event_id, stat_dict)
+      func_send_message(config.matrix_base_url,sync_headers, matrix_room, f"Command not found :thinking: ({matrix_received_message})\nif you need more info use `{config.command_prefix+config.command_help}`", event_id, stat_dict)
       return False 
 
   return False  # No command matched and does not match to command prefix
@@ -434,7 +431,7 @@ def func_startup_check(stats_file,teamspeak_version_notify_matrix_rooms,teamspea
   func_check_invite(config.matrix_base_url, sync_headers, sync_base_url, config.matrix_join_rooms, sync_url, sync_response)
   func_set_status(config.matrix_base_url,matrix_self,sync_headers,config.status_text,config.presence_state)
   func_add_stats("startup_count",stat_dict)
-  func_check_client_update(config.matrix_base_url,access_token, user_agent, teamspeak_version_notify_matrix_rooms, config.matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, 0,stat_dict)
+  func_check_client_update(config.matrix_base_url,sync_headers, teamspeak_version_notify_matrix_rooms, config.matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, 0,stat_dict)
   teamspeak_version_notify_matrix_rooms = func_update_notify_rooms_get(teamspeak_version_notify_file) 
   func_write_to_log(f"current rooms to notify: {teamspeak_version_notify_matrix_rooms}", "INFO", "startup_finished")
   func_write_to_log("Startup complete...", "INFO", "startup_finished")
@@ -466,7 +463,7 @@ def func_main(teamspeak_version_last_check_time, stats_file, teamspeak_version_n
     elapsed_time = time.time() - teamspeak_version_last_check_time
     if elapsed_time >= teamspeak_version_check_interval: 
       teamspeak_version_last_check_time = time.time()
-      func_check_client_update(config.matrix_base_url,access_token, user_agent, teamspeak_version_notify_matrix_rooms, config.matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, 0,stat_dict)
+      func_check_client_update(config.matrix_base_url,sync_headers, teamspeak_version_notify_matrix_rooms, config.matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, 0,stat_dict)
 
 
     response = func_matrix_sync(config.matrix_base_url, sync_base_url, sync_headers, sync_response)
@@ -490,11 +487,12 @@ def func_main(teamspeak_version_last_check_time, stats_file, teamspeak_version_n
                 if event["type"] == "m.room.message" and event["sender"] != matrix_self:
                   # Print the message body, need to changed to loggin into a file
                   matrix_sender = event["sender"]
-                  matrix_sender_name = func_get_username(config.matrix_base_url,sync_headers,matrix_sender)
+                  matrix_sender_name = func_get_username(config.matrix_base_url,matrix_sender,sync_headers)
                   matrix_event_id = event["event_id"]
                   matrix_received_message = event["content"]["body"]
-                  matrix_room_name = func_get_room_name(config.matrix_base_url, matrix_room, access_token, user_agent)
-                  room_mods, room_admins = func_get_room_mods_and_admins(config.matrix_base_url, matrix_room, access_token, user_agent)
+                  matrix_room_name = func_get_room_name(config.matrix_base_url, matrix_room,sync_headers)
+                  matrix_room_join_rule = func_get_room_join_rule(config.matrix_base_url, matrix_room, sync_headers)
+                  room_mods, room_admins = func_get_room_mods_and_admins(config.matrix_base_url, matrix_room,sync_headers)
                   func_write_to_log(matrix_sender  + ": " + matrix_received_message +" (room: "+ matrix_room +")", "INFO", "main_loop")
                   func_write_to_log(json.dumps(event,sort_keys=True, indent=4), "DEBUG", "main_loop")
                   
@@ -502,24 +500,30 @@ def func_main(teamspeak_version_last_check_time, stats_file, teamspeak_version_n
                   command_succesfull = func_dispatch_command(matrix_received_message, matrix_sender, matrix_room, matrix_event_id, access_token, sync_headers, teamspeak_version_notify_matrix_rooms, configfile, matrix_self, matrix_room_name)
                   func_write_stats_to_file(stat_dict, stats_file)
                   teamspeak_version_notify_matrix_rooms = func_update_notify_rooms_get(teamspeak_version_notify_file) 
-                  violation, reason = func_check_violation(matrix_received_message, matrix_sender, room_admins, room_mods)
-                  if violation:
-                    message, warn_count = func_warn_user(matrix_room, matrix_sender, reason)
-                    func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, message, matrix_event_id, stat_dict)
-                    func_delete_message(config.matrix_base_url, matrix_room, matrix_event_id, access_token, user_agent, reason)
-                    if warn_count >= config.warn_limit:
-                      func_send_message(config.matrix_base_url, access_token, user_agent, matrix_room, f"User {matrix_sender_name} have been banned for violating the rules too often", matrix_event_id, stat_dict)
-                      func_delete_message(config.matrix_base_url, matrix_room, matrix_event_id, access_token, user_agent)
-                      if config.warn_action == "ban":
-                        func_write_to_log(f"User {matrix_sender} has been banned for violating the rules too often", "INFO", "main_loop")
-                        func_ban_user(config.matrix_base_url, access_token, user_agent, matrix_room, matrix_sender)
-                      elif config.warn_action == "kick":
-                        func_write_to_log(f"User {matrix_sender} has been kicked for violating the rules too often", "INFO", "main_loop")
-                        func_kick_user(config.matrix_base_url, access_token, user_agent, matrix_room, matrix_sender)
-                      else:
-                        func_write_to_log("Unknown warn action, please check your config", "ERROR", "main_loop")
-                        func_write_to_log(f"User {matrix_sender} has been banned for violating the rules too often", "INFO", "main_loop")
-                        func_ban_user(config.matrix_base_url, access_token, user_agent, matrix_room, matrix_sender)
+                  if func_is_moderation_enabled(matrix_room):
+                    violation, reason = func_check_violation(matrix_received_message, matrix_sender, room_admins, room_mods)
+                    if violation:
+                      message, warn_count = func_warn_user(matrix_room, matrix_sender, reason)
+                      func_delete_message(config.matrix_base_url, matrix_room, matrix_event_id,sync_headers, reason)
+                      func_send_message(config.matrix_base_url,sync_headers, matrix_room, message, matrix_event_id, stat_dict)
+                      if warn_count >= config.warn_limit:
+                        if matrix_room_join_rule == "public": 
+                          if func_ban_user(config.matrix_base_url, matrix_room, matrix_sender,sync_headers, reason):
+                            func_write_to_log(f"User {matrix_sender} has been banned for violating the rules too often (reason: {reason})", "INFO", "main_loop")
+                            func_send_message(config.matrix_base_url,sync_headers, matrix_room, f"User {matrix_sender_name} have been banned for violating the rules too often", matrix_event_id, stat_dict)
+                          else: 
+                            func_write_to_log(f"Failed to ban user {matrix_sender} for violating the rules too often (reason: {reason})", "ERROR", "main_loop")
+                            func_send_message(config.matrix_base_url,sync_headers, matrix_room, f"Failed to ban user {matrix_sender_name} for violating the rules too often (reason: {reason})", matrix_event_id, stat_dict)
+
+                        else: 
+                          # the reasons for a kick only in privat chats, is that teamspeak currently has no ban ui seaction in privat rooms
+                          # so if you ban someone in a privat room, he can just rejoin and not be invated again and i would need to build a function to unban somebody that nobody sees in the ui
+                          if func_kick_user(config.matrix_base_url, matrix_room, matrix_sender,sync_headers, reason):  
+                            func_write_to_log(f"User {matrix_sender} has been kicked for violating the rules too often", "INFO", "main_loop")
+                            func_send_message(config.matrix_base_url,sync_headers, matrix_room, f"User {matrix_sender_name} have been kicked for violating the rules too often", matrix_event_id, stat_dict)
+                          else:
+                            func_write_to_log(f"Failed to kick user {matrix_sender} for violating the rules too often (reason: {reason})", "ERROR", "main_loop")
+                            func_send_message(config.matrix_base_url,sync_headers, matrix_room, f"Failed to kick user {matrix_sender_name} for violating the rules too often (reason: {reason})", matrix_event_id, stat_dict)
 
       else:
         time.sleep(10)
