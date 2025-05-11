@@ -95,6 +95,8 @@ command_admin_stats = command_base_admin + "stats"
 command_admin_reload = command_base_admin + "reload"
 command_admin_autojoin = command_base_admin + "autojoin"
 command_admin_notify = command_base_admin + "update-notify"
+command_admin_list_banned_users = command_base_admin + "ban list"
+command_admin_unban_user = command_base_admin + "unban"
 
 # normal user command overview
 # toggle command with True or False
@@ -125,6 +127,8 @@ admin_commands_overview = {
     command_admin_stats: {"description": "display gathered stats", "command_enabled": True},
     command_admin_reload: {"description": "reload current config", "command_enabled": True},
     command_admin_autojoin: {"description": "toggle auto join for rooms and direct chats on invite to on or off", "command_enabled": True},
+    command_admin_list_banned_users: {"description": "list users that have been banned in the current room", "command_enabled": True},
+    command_admin_unban_user: {"description": "unban a user from the current room, parse the userid, e.g. `!admin unban userid12345`", "command_enabled": True},
     command_admin_notify: {"description": "toggle notifcation, for room the command was entered in", "command_enabled": True}
     }   
 
