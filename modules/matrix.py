@@ -61,14 +61,13 @@ def func_matrix_sync(matrix_base_url,sync_base_url,sync_headers, sync_response):
 
   return response
 
-def func_send_message(matrix_base_url, access_token, user_agent, matrix_room, matrix_send_message, event_id, stat_dict):
+def func_send_message(matrix_base_url,sync_headers, matrix_room, matrix_send_message, event_id, stat_dict):
   """send a message to a room
 
   Args:
       matrix_base_url (str): the base URL of the Matrix server
       access_token (str): current session access token
-      user_agent (str): user agent for talking to the api
-      matrix_room (str): id of the room to send the message to
+      sync_headers (dict): HTTP headers used for authentication and synchronization.
       matrix_send_message (str): message to send
       event_id (str): the event id of the message 
   
@@ -79,8 +78,7 @@ def func_send_message(matrix_base_url, access_token, user_agent, matrix_room, ma
   if matrix_send_message:
     message_url = matrix_base_url + "/_matrix/client/r0/rooms/" + matrix_room + "/send/m.room.message"
     message_data = {"msgtype": "m.text", "body": matrix_send_message}
-    message_headers = {"Authorization": "Bearer " + access_token, "User-Agent": user_agent}
-    response = requests.post(message_url, json=message_data, headers=message_headers)
+    response = requests.post(message_url, json=message_data, headers=sync_headers)
     matrix_send_message=""
     if response.status_code == 200:
       func_write_to_log("Message sent successfully! (room "+matrix_room+")", "INFO", current_function)
@@ -92,7 +90,7 @@ def func_send_message(matrix_base_url, access_token, user_agent, matrix_room, ma
     # set message to read, only works in privat chat
     try:
       payload = {"m.fully_read": event_id, "m.read": event_id}
-      response = requests.post(matrix_base_url + "/_matrix/client/r0/rooms/" + matrix_room + "/read_markers", headers=message_headers, json=payload)
+      response = requests.post(matrix_base_url + "/_matrix/client/r0/rooms/" + matrix_room + "/read_markers", headers=sync_headers, json=payload)
       if response.status_code == 200:
         func_write_to_log("Message successfully set to read!", "INFO", current_function)
       else:
@@ -101,6 +99,7 @@ def func_send_message(matrix_base_url, access_token, user_agent, matrix_room, ma
     except NameError:
       payload = {}
     
+    time.sleep(1) # reduce the reqest rate to the server, 
     return response.status_code
 
 
@@ -149,7 +148,7 @@ def func_check_invite(matrix_base_url, sync_headers, sync_base_url, matrix_join_
             response_room_name = response.json()[6]
             
             check_room_name = str(response_room_name.get("rooms"))
-
+            func_get_room_name(matrix_base_url, matrix_new_room, sync_headers)
             if check_room_name != "None":
               room_name = response_room_name["content"]["name"]
             else:
@@ -187,7 +186,7 @@ def func_set_status(matrix_base_url, matrix_self, sync_headers, status_text, con
     func_write_to_log("Failed to update status message. %s" % response.text, "ERROR", current_function)
 
 
-def func_find_roomid(matrix_base_url, access_token, user_agent, user_identifiers):
+def func_find_roomid(matrix_base_url,sync_headers, user_identifiers):
   """get priv roomid with identifier 
   Problem: theres a 50/50 chance if the user is alone with the bot inside a group chat, 
            that the script gets confused and thinks the group chat is the privat chat, 
@@ -206,12 +205,12 @@ def func_find_roomid(matrix_base_url, access_token, user_agent, user_identifiers
   user_room_ids = {}
   
   response = requests.get(matrix_base_url+"/_matrix/client/r0/joined_rooms",
-             headers={"Authorization": f"Bearer {access_token}","User-Agent": user_agent})
+             headers=sync_headers)
   room_list = response.json().get("joined_rooms", [])
   for user_identifier in user_identifiers:
     for matrix_room in room_list:
       response = requests.get(matrix_base_url+"/_matrix/client/r0/rooms/"+matrix_room+"/members",
-                 headers={"Authorization": f"Bearer {access_token}","User-Agent": user_agent})
+                 headers=sync_headers)
       if response.status_code == 200:
         member_list = response.json().get("chunk", [])
         
@@ -220,7 +219,7 @@ def func_find_roomid(matrix_base_url, access_token, user_agent, user_identifiers
           if len(member_list) == 2 and member.get("state_key") in user_identifier:
             # Get room information
             response = requests.get(matrix_base_url+"/_matrix/client/r0/rooms/"+matrix_room+"/state",
-                                    headers={"Authorization": f"Bearer {access_token}","User-Agent": user_agent})
+                                    headers=sync_headers)
             user_room_ids[user_identifier] = matrix_room
             break
       else:
@@ -230,7 +229,7 @@ def func_find_roomid(matrix_base_url, access_token, user_agent, user_identifiers
   return user_room_ids
 
 
-def func_get_room_mods_and_admins(matrix_base_url, matrix_room, access_token, user_agent):
+def func_get_room_mods_and_admins(matrix_base_url, matrix_room, sync_headers):
   """Get the moderators and admins of a room.	
 
   Args:
@@ -243,8 +242,7 @@ def func_get_room_mods_and_admins(matrix_base_url, matrix_room, access_token, us
       list, list: list of admins and moderators in the room
   """
   url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/state/m.room.power_levels"
-  headers = {"Authorization": f"Bearer {access_token}", "User-Agent": user_agent}
-  response = requests.get(url, headers=headers)
+  response = requests.get(url, headers=sync_headers)
   if response.status_code != 200:
     func_write_to_log(f"Failed to get power levels for {matrix_room}: {response.text}", "ERROR", "get_room_mods_and_admins")
     return [], []
@@ -256,20 +254,18 @@ def func_get_room_mods_and_admins(matrix_base_url, matrix_room, access_token, us
   return admin_list, mod_list
 
 
-def func_is_private_chat(matrix_base_url, matrix_self, access_token, user_agent, matrix_room):
+def func_is_private_chat(matrix_base_url, matrix_room, sync_headers):
   """Check if the room is a private chat.
 
   Args:
       matrix_base_url (str): the base URL of the Matrix server
-      matrix_self (str): the bot's identifier 
-      access_token (str): current session access token
-      user_agent (str): user agent for talking to the api
       matrix_room (str): the ID of the room to check
+      sync_headers (dict): HTTP headers used for authentication and synchronization.
 
   Returns:
       bool: True if the room is a private chat, False otherwise
   """
-  room_name = func_get_room_name(matrix_base_url, matrix_room, access_token, user_agent)
+  room_name = func_get_room_name(matrix_base_url, matrix_room, sync_headers)
   if room_name == False:
     return True
   else:
@@ -277,21 +273,19 @@ def func_is_private_chat(matrix_base_url, matrix_self, access_token, user_agent,
 
 
 
-def func_get_room_name(matrix_base_url, matrix_room, access_token, user_agent):
+def func_get_room_name(matrix_base_url, matrix_room, sync_headers):
   """Get the name of a room by its ID.
 
   Args:
       matrix_base_url (str): the base URL of the Matrix server
       matrix_room (str): the ID of the room to check
-      access_token (str): current session access token
-      user_agent (str): user agent for talking to the api
+      sync_headers (dict): HTTP headers used for authentication and synchronization.
   
   Returns:
       str: the name of the room, or None if not found
   """
   url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/state/m.room.name"
-  headers = {"Authorization": f"Bearer {access_token}", "User-Agent": user_agent}
-  response = requests.get(url, headers=headers)
+  response = requests.get(url, headers=sync_headers)
 
   if response.status_code == 200:
     return response.json().get("name", "").strip()
@@ -302,12 +296,12 @@ def func_get_room_name(matrix_base_url, matrix_room, access_token, user_agent):
     return None
 
 
-def func_delete_message(matrix_base_url, room_id, event_id, access_token, user_agent, reason=""):
+def func_delete_message(matrix_base_url, matrix_room, event_id, sync_headers, reason=""):
   """Redacts (deletes) a message from a room.
 
   Args:
       matrix_base_url (str): The Matrix server base URL.
-      room_id (str): The room from which to delete the message.
+      matrix_room (str): The room from which to delete the message.
       event_id (str): The ID of the event (message) to delete.
       access_token (str): The bot's access token.
       user_agent (str): Custom user-agent string.
@@ -316,20 +310,107 @@ def func_delete_message(matrix_base_url, room_id, event_id, access_token, user_a
   Returns:
       bool: True if deletion succeeded, False otherwise.
   """
-  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{room_id}/redact/{event_id}"
-  headers = {
-    "Authorization": f"Bearer {access_token}",
-    "User-Agent": user_agent
-  }
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/redact/{event_id}"
+
   payload = {"reason": reason} if reason else {}
-  response = requests.post(url, headers=headers, json=payload)
+  response = requests.post(url, headers=sync_headers, json=payload)
 
   if response.status_code == 200:
-    func_write_to_log(f"Deleted message {event_id} in room {room_id}", "INFO", "func_delete_message")
+    func_write_to_log(f"Deleted message {event_id} in room {matrix_room}", "INFO", "func_delete_message")
     return True
   else:
     func_write_to_log(f"Failed to delete message {event_id}: {response.status_code} - {response.text}", "ERROR", "func_delete_message")
     return False
+  
+def func_get_username(matrix_base_url, matrix_sender, sync_headers):
+  """Get the username of a sender
+
+  Args:
+      matrix_base_url (str): The Matrix server base URL.
+      matrix_sender (str): The ID of the sender.
+      sync_headers (dict): HTTP headers used for authentication and synchronization.
+
+  Returns:
+      str: The display name of the sender.
+  """
+  request_sender_name = requests.get(matrix_base_url + "/_matrix/client/r0/profile/"+ matrix_sender, headers=sync_headers)
+  return request_sender_name.json()["displayname"]
+
+
+
+def func_kick_user(matrix_base_url, matrix_room, user_id,sync_headers, reason=""):
+  """Kick a user
+
+  Args:
+      matrix_base_url (str): The Matrix server base URL.
+      matrix_room (str): The room from which to kick the user.
+      user_id (str): The ID of the user to kick.
+      access_token (str): The bot's access token.
+      user_agent (str): Custom user-agent string.
+      reason (str): Optional reason for kicking.
+
+  Returns:
+      bool: True if kicking succeeded, False otherwise.
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/kick"
+  payload = {"user_id": user_id}
+  if reason:
+    payload["reason"] = reason
+
+  response = requests.post(url, headers=sync_headers, json=payload)
+
+  if response.status_code == 200:
+    func_write_to_log(f"Kicked user {user_id} from room {matrix_room}", "INFO", "func_kick_user")
+    return True
+  else:
+    func_write_to_log(f"Failed to kick user {user_id}: {response.status_code} - {response.text}", "ERROR", "func_kick_user")
+    return False
+
+
+def func_ban_user(matrix_base_url, matrix_room, user_id,sync_headers, reason=""):
+  """Ban a user
+
+  Args:
+      matrix_base_url (str): The Matrix server base URL.
+      matrix_room (str): The room from which to ban the user.
+      user_id (str): The ID of the user to ban.
+      access_token (str): The bot's access token.
+      user_agent (str): Custom user-agent string.
+      reason (str): Optional reason for banning.
+
+  Returns:
+      bool: True if banning succeeded, False otherwise.
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/ban"
+  payload = {"user_id": user_id}
+  if reason:
+    payload["reason"] = reason
+
+  response = requests.post(url, headers=sync_headers, json=payload)
+
+  if response.status_code == 200:
+    func_write_to_log(f"Banned user {user_id} from room {matrix_room}", "INFO", "func_ban_user")
+    return True
+  else:
+    func_write_to_log(f"Failed to ban user {user_id}: {response.status_code} - {response.text}", "ERROR", "func_ban_user")
+    return False
+
+
+def func_get_room_join_rule(matrix_base_url, matrix_room, sync_headers):
+  """Get the join rule of a Matrix room (e.g., invite-only, public).
+
+  Returns:
+      str: One of 'invite', 'public', 'knock', 'restricted' or '' on error.
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/state/m.room.join_rules"
+  response = requests.get(url, headers=sync_headers)
+
+  if response.status_code == 200:
+    return response.json().get("join_rule", "")
+  else:
+    func_write_to_log(f"Failed to get join rules for {matrix_room}: {response.status_code} - {response.text}", "ERROR", "get_room_join_rule")
+    return None
+
 
 # def func_set_avatar():
 #   """set avatar 
