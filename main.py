@@ -501,7 +501,7 @@ def func_main(teamspeak_version_last_check_time, stats_file, teamspeak_version_n
                   func_write_stats_to_file(stat_dict, stats_file)
                   teamspeak_version_notify_matrix_rooms = func_update_notify_rooms_get(teamspeak_version_notify_file) 
                   if func_is_moderation_enabled(matrix_room):
-                    violation, reason = func_check_violation(matrix_received_message, matrix_sender, room_admins, room_mods)
+                    violation, reason = func_check_violation(main_script_path, matrix_received_message, matrix_sender, room_admins, room_mods)
                     if violation:
                       message, warn_count = func_warn_user(matrix_room, matrix_sender, reason)
                       func_delete_message(config.matrix_base_url, matrix_room, matrix_event_id,sync_headers, reason)
