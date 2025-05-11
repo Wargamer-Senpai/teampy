@@ -47,12 +47,10 @@ presence_state = "online"
 stats_visible = "public"
 
 # set the amount of rule violations a user can make before getting banned/kicked
+# they will not automatically reset
+# the action take against the user depends on the room type, if the room is invite only the user only gets kicked,
+# is the room public, then the bot tries to ban the user
 warn_limit = 5
-
-# set the action that should be taken when the user reaches the warn_limit
-# possible values: "ban" or "kick"
-# if no valid value is parsed it will revert to ban
-warn_action="ban"
 
 # set message when the bot detects a new version 
 # you can use <@_|everyone> to ping everyone
