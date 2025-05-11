@@ -2,6 +2,7 @@ import json
 import os
 import re
 from datetime import datetime, timezone
+from better_profanity import profanity
 
 from modules.logger import func_write_to_log
 
@@ -76,7 +77,7 @@ def func_is_moderation_enabled(matrix_room):
   return matrix_room in moderation_data["enabled_rooms"]
 
 
-def func_check_violation(message, sender, admin_list, mod_list):
+def func_check_violation(main_script_path,message, sender, admin_list, mod_list):
   """Check if a message violates moderation rules.
 
   Args:
@@ -88,11 +89,14 @@ def func_check_violation(message, sender, admin_list, mod_list):
   Returns:
       bool: True if the message violates moderation rules, False otherwise.
   """
-  banned_words = ["badword1", "badword2", "spam"]
-  for word in banned_words:
-    if re.search(rf"\\b{re.escape(word)}\\b", message, re.IGNORECASE):
-      return True, f"Used banned word: {word}"
-
+  try: 
+    profanity.load_censor_words_from_file(os.path.join(main_script_path, "data", "profanity.list"))
+    if profanity.contains_profanity(message):
+      return True, f"Users message contained profanity"
+  except Exception as e:
+    func_write_to_log(f"Error loading profanity filter: {e}", "ERROR", "func_check_violation")
+    
+  
   if "<@_|everyone>" in message and sender not in admin_list and sender not in mod_list:
     return True, "Unauthorized `@everyone` usage"
 
@@ -148,3 +152,6 @@ def func_get_warning_count(matrix_room, user_id):
     return f"Warnings: {user_data['count']}\nReasons:\n{reasons}"
   else:
     return "No warnings found."
+  
+
+profanity.contains_profanity("fuck you") 
