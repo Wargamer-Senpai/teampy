@@ -9,3 +9,4 @@ example_config.py
 config.py
 check_container
 bot.pid
+data/*.json
