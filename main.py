@@ -526,7 +526,7 @@ def func_main(teamspeak_version_last_check_time, stats_file, teamspeak_version_n
                             func_send_message(config.matrix_base_url,sync_headers, matrix_room, f"Failed to kick user {matrix_sender_name} for violating the rules too often (reason: {reason})", matrix_event_id, stat_dict)
 
       else:
-        time.sleep(10)
+        time.sleep(5)
         response = func_matrix_sync(config.matrix_base_url, sync_base_url, sync_headers, sync_response)
      
       # check if he got invited into a new room 
