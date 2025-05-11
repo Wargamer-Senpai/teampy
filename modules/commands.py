@@ -131,7 +131,8 @@ def func_handle_whois(matrix_base_url,sync_headers,matrix_received_message,bot_a
 
     return("The identifier is: "+ matrix_identifier + "\nThe name is: " + matrix_sender_name \
     + "\nI see that person as a " + user_rank)
-
+  else:
+    return("I need a identifier to search for, please use the command like this: `!whois <identifier>`") 
 
 def func_handle_stats(stats_visible,stat_dict,bot_admin,stats_description,matrix_sender):
   """Handle the stats command and send the stats to the chat
