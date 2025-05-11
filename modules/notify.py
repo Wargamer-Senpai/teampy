@@ -32,7 +32,7 @@ def func_update_notify_room_add(matrix_room,teamspeak_version_notify_file,teamsp
     return "already in notify groupd :eyes:"
 
 
-def func_notify_update(matrix_base_url,access_token, user_agent, teamspeak_version_notify_matrix_rooms, matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, event_id, stat_dict):
+def func_notify_update(matrix_base_url, sync_headers, teamspeak_version_notify_matrix_rooms, matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, event_id, stat_dict):
   """notify the rooms that an new update is available
 
   Args:
@@ -48,7 +48,7 @@ def func_notify_update(matrix_base_url,access_token, user_agent, teamspeak_versi
   current_function = inspect.currentframe().f_code.co_name
   if teamspeak_version_notify_matrix_rooms:
     for matrix_room in teamspeak_version_notify_matrix_rooms:
-      response = func_send_message(matrix_base_url, access_token, user_agent, matrix_room, matrix_update_message+ teamspeak_version_saved, event_id, stat_dict)
+      response = func_send_message(matrix_base_url, sync_headers, matrix_room, matrix_update_message+ teamspeak_version_saved, event_id, stat_dict)
 
       if not response == 200:
         func_write_to_log("couldnt notify room: " + matrix_room + ", probably not member of the room anymore.  %s" % response.text, "ERROR", current_function)

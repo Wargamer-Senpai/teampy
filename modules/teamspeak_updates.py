@@ -4,7 +4,7 @@ import inspect
 from modules.logger import func_write_to_log
 from modules.notify import *
 
-def func_check_client_update(matrix_base_url,access_token, user_agent, teamspeak_version_notify_matrix_rooms, matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, event_id, stat_dict):
+def func_check_client_update(matrix_base_url, sync_headers, teamspeak_version_notify_matrix_rooms, matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, event_id, stat_dict):
   """Check for Teamspeak client updates and trigger a notification if a new version is available
 
   Args:
@@ -28,7 +28,7 @@ def func_check_client_update(matrix_base_url,access_token, user_agent, teamspeak
       if teamspeak_version_saved:
         if teamspeak_version_saved != teamspeak_version_request:
           teamspeak_version_saved = teamspeak_version_request
-          func_notify_update(matrix_base_url,access_token, user_agent, teamspeak_version_notify_matrix_rooms, matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, event_id, stat_dict)
+          func_notify_update(matrix_base_url, sync_headers, teamspeak_version_notify_matrix_rooms, matrix_update_message, teamspeak_version_saved, teamspeak_version_notify_file, event_id, stat_dict)
 
       else:
         teamspeak_version_saved = teamspeak_version_request
