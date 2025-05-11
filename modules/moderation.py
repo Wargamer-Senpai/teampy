@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 from modules.logger import func_write_to_log
 
@@ -37,7 +37,6 @@ def func_save_moderation_data(data):
   func_write_to_log("Saving moderation data to disk", "DEBUG", "func_save_moderation_data")
   with open(mod_data_file, "w") as f:
     json.dump(data, f)
-  print(json.dumps(data,sort_keys=True, indent=4))
 
 
 def func_enable_moderation(matrix_room):
@@ -61,7 +60,6 @@ def func_disable_moderation(matrix_room):
   if matrix_room in moderation_data["enabled_rooms"]:
     moderation_data["enabled_rooms"].remove(matrix_room)
     # pretty print
-    print(json.dumps(moderation_data,sort_keys=True, indent=4))
     func_save_moderation_data(moderation_data)
 
 
@@ -116,7 +114,7 @@ def func_warn_user(matrix_room, user_id, reason):
   room_warns = moderation_data["warnings"].setdefault(matrix_room, {})
   user_data = room_warns.setdefault(user_id, {"count": 0, "reasons": []})
   user_data["count"] += 1
-  user_data["reasons"].append(f"{datetime.now(datetime.timezone.utc).isoformat()} - {reason}")
+  user_data["reasons"].append(f"{datetime.now(timezone.utc).isoformat()} - {reason}")
   func_save_moderation_data(moderation_data)
   return f"Deleted message, reason: {reason}. (Warn count: {user_data['count']})", user_data['count']
 
