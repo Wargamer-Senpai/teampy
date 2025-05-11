@@ -117,7 +117,7 @@ def func_reset_warnings(room_id, user_id):
 
 
 def func_et_warning_count(room_id, user_id):
-  """_summary_
+  """Get the warning count for a user in a specific room.
 
   Args:
       room_id (str): The ID of the room where the user is located
