@@ -200,3 +200,68 @@ def func_handle_admin_version(version):
 
   return("Current Version of teampy **" + version + "**"+ \
     "\n"+compare_version)
+
+
+def func_handle_admin_list_banned_users(matrix_base_url, matrix_room, sync_headers):
+  """Returns a list of banned users in a room (user_id and display name if available).
+
+  Returns:
+      list of dicts: [{"user_id": "...", "displayname": "..."}]
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/members"
+  response = requests.get(url, headers=sync_headers)
+
+  banned_users = []
+
+  if response.status_code != 200:
+    func_write_to_log(f"Failed to get room members for ban check: {response.status_code} - {response.text}", "ERROR", "func_list_banned_users")
+    return banned_users
+
+  members = response.json().get("chunk", [])
+  for member in members:
+    print(member)
+    if member.get("content", {}).get("membership") == "ban":
+      banned_users.append({
+        "user_id": member.get("state_key", ""),
+        "displayname": member.get("content", {}).get("displayname", ""),
+        "reason": member.get("content", {}).get("reason", "")
+      })
+  if not banned_users:
+    return "No users are currently banned from this room."
+
+  output = "**Banned Users in this Room :eyes::**\n\n"
+  for i, user in enumerate(banned_users, 1):
+    display = user['displayname'] or func_get_username(matrix_base_url, user['user_id'], sync_headers)
+    reason = f" – _{user['reason']}_" if user['reason'] else ""
+    output += f"{i}. `{user['user_id']}` ({display}){reason}\n"
+
+  return output
+
+
+def func_handle_admin_unban_user(matrix_base_url, matrix_room, matrix_received_message, sync_headers):
+  """Unbans a user by re-inviting them (Matrix spec requires an invite to undo a ban).
+
+  Returns:
+      bool: True if successful, False otherwise
+  """
+  parts = matrix_received_message.strip().split()
+  if len(parts) >= 3 and parts[0] == "!admin" and parts[1] == "unban":
+    matrix_identifier = parts[2]
+  else:
+    matrix_identifier = None 
+  print(matrix_identifier)
+  if matrix_identifier:
+    url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/unban"
+    payload = {"user_id": matrix_identifier}
+
+    response = requests.post(url, headers=sync_headers, json=payload)
+
+    if response.status_code == 200:
+      func_write_to_log(f"Successfully unbanned user {matrix_identifier} from {matrix_room}", "INFO", "func_unban_user")
+      return f"Unbanned user ({func_get_username(matrix_base_url,matrix_identifier,sync_headers)}) successfully"
+    else:
+      func_write_to_log(f"Failed to unban user {matrix_identifier}: {response.status_code} - {response.text}", "ERROR", "func_unban_user")
+      return "Failed to unban user, please check the user_id and try again."
+  else:
+    func_write_to_log("No user_id provided for unban", "ERROR", "func_unban_user")
+    return "No user_id provided for unban, please use the command like this: `!admin unban <user_id>`"
