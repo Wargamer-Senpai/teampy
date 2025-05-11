@@ -5,6 +5,7 @@ from modules.config_manager import *
 from modules.health import *
 from modules.bot_control import *
 from modules.notify import *
+from modules.moderation import *
 
 import config
 
@@ -71,7 +72,39 @@ def func_handle_admin_leave(matrix_base_url,matrix_room,sync_headers):
   return "left room"
 
 
-def func_handle_admin_stop(matrix_base_url, access_token, user_agent, matrix_room, event_id, stat_dict):
+def func_handle_admin_moderation_toggle(matrix_base_url, matrix_room, sync_headers, matrix_self, matrix_room_name):
+  """Toggle moderation for a specific room. If moderation is enabled, it will be disabled and vice versa.
+  Args:
+      matrix_base_url (str): the base URL of the Matrix server
+      matrix_room (str): the ID of the room to toggle moderation for
+      access_token (str): current session access token
+      user_agent (str): user agent for talking to the api
+      matrix_self (str): the bot's identifier 
+      matrix_room_name (str): the name of the room
+  
+  Returns:
+      str: a message indicating the new state of moderation for the room
+  """
+  if func_is_moderation_enabled(matrix_room):
+    func_disable_moderation(matrix_room)
+    func_write_to_log(f"Disabled moderation for room-id {matrix_room} - room-name: {matrix_room_name}", "INFO", "func_handle_admin_moderation_toggle")
+    return("Disabled moderation for room-id " + matrix_room)
+  else:
+    if not func_is_private_chat(matrix_base_url, matrix_room, sync_headers):
+      mods, admins = func_get_room_mods_and_admins(matrix_base_url, matrix_room, sync_headers)
+      if matrix_self in mods or matrix_self in admins:
+        func_enable_moderation(matrix_room)
+        func_write_to_log(f"Enabled moderation for room-id {matrix_room} - room-name: {matrix_room_name}", "INFO", "func_handle_admin_moderation_toggle")
+        return("Enabled moderation for room-id " + matrix_room)
+      else:
+        func_write_to_log(f"Moderation will not be enabled for room {matrix_room_name}, bot is not a mod or admin", "ERROR", "func_handle_admin_moderation_toggle")
+        return("Moderation will not be enabled for this room, bot is not a mod or admin")
+    else: 
+      func_write_to_log(f"Moderation will not be enabled for this privat room", "ERROR", "func_handle_admin_moderation_toggle")
+      return("Moderation will not be enabled for this privat room")
+
+
+def func_handle_admin_stop(matrix_base_url, sync_headers, matrix_room, event_id, stat_dict):
   """Stop the bot and send a goodbye message.
   
   Args:
@@ -82,12 +115,12 @@ def func_handle_admin_stop(matrix_base_url, access_token, user_agent, matrix_roo
       event_id (str): the event ID of the message to reply to
 
   """
-  func_send_message(matrix_base_url, access_token, user_agent, matrix_room, "Good By :wave:", event_id, stat_dict)
+  func_send_message(matrix_base_url, sync_headers, matrix_room, "Good By :wave:", event_id, stat_dict)
   func_write_to_log("stopping bot", "INFO", "func_handle_admin_stop")
   func_bot_stop()
 
 
-def func_handle_admin_restart(matrix_base_url, access_token, user_agent, matrix_room, event_id, stat_dict,main_script_path):
+def func_handle_admin_restart(matrix_base_url, sync_headers, matrix_room, event_id, stat_dict,main_script_path):
   """Restart the bot and send a goodbye message.
   
   Args:
@@ -98,7 +131,7 @@ def func_handle_admin_restart(matrix_base_url, access_token, user_agent, matrix_
       event_id (str): the event ID of the message to reply to
 
   """
-  func_send_message(matrix_base_url, access_token, user_agent, matrix_room, "See you soon :wave:", event_id, stat_dict)
+  func_send_message(matrix_base_url, sync_headers, matrix_room, "See you soon :wave:", event_id, stat_dict)
   func_write_to_log("Restarting bot", "INFO", "func_handle_admin_restart")
   func_bot_restart(main_script_path)
 
