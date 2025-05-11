@@ -90,8 +90,7 @@ def func_handle_whoami(matrix_base_url,sync_headers,bot_admin,matrix_sender):
   Returns: 
       str: formatted message with the identifier and name of the user
   """
-  request_sender_name = requests.get(matrix_base_url + "/_matrix/client/r0/profile/"+ matrix_sender, headers=sync_headers)
-  matrix_sender_name = request_sender_name.json()["displayname"]
+  matrix_sender_name = func_get_username(matrix_base_url,matrix_sender,sync_headers)
   user_rank = "User"
   if matrix_sender in bot_admin: 
     user_rank = "Admin"
