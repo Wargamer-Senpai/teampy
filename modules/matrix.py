@@ -230,6 +230,107 @@ def func_find_roomid(matrix_base_url, access_token, user_agent, user_identifiers
   return user_room_ids
 
 
+def func_get_room_mods_and_admins(matrix_base_url, matrix_room, access_token, user_agent):
+  """Get the moderators and admins of a room.	
+
+  Args:
+      matrix_base_url (str): the base URL of the Matrix server
+      matrix_room (str): the ID of the room to check
+      access_token (str): current session access token
+      user_agent (str): user agent for talking to the api
+
+  Returns:
+      list, list: list of admins and moderators in the room
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/state/m.room.power_levels"
+  headers = {"Authorization": f"Bearer {access_token}", "User-Agent": user_agent}
+  response = requests.get(url, headers=headers)
+  if response.status_code != 200:
+    func_write_to_log(f"Failed to get power levels for {matrix_room}: {response.text}", "ERROR", "get_room_mods_and_admins")
+    return [], []
+
+  data = response.json()
+  users = data.get("users", {})
+  admin_list = [user for user, level in users.items() if level >= 100]
+  mod_list = [user for user, level in users.items() if 50 <= level < 100]
+  return admin_list, mod_list
+
+
+def func_is_private_chat(matrix_base_url, matrix_self, access_token, user_agent, matrix_room):
+  """Check if the room is a private chat.
+
+  Args:
+      matrix_base_url (str): the base URL of the Matrix server
+      matrix_self (str): the bot's identifier 
+      access_token (str): current session access token
+      user_agent (str): user agent for talking to the api
+      matrix_room (str): the ID of the room to check
+
+  Returns:
+      bool: True if the room is a private chat, False otherwise
+  """
+  room_name = func_get_room_name(matrix_base_url, matrix_room, access_token, user_agent)
+  if room_name == False:
+    return True
+  else:
+    return False
+
+
+
+def func_get_room_name(matrix_base_url, matrix_room, access_token, user_agent):
+  """Get the name of a room by its ID.
+
+  Args:
+      matrix_base_url (str): the base URL of the Matrix server
+      matrix_room (str): the ID of the room to check
+      access_token (str): current session access token
+      user_agent (str): user agent for talking to the api
+  
+  Returns:
+      str: the name of the room, or None if not found
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{matrix_room}/state/m.room.name"
+  headers = {"Authorization": f"Bearer {access_token}", "User-Agent": user_agent}
+  response = requests.get(url, headers=headers)
+
+  if response.status_code == 200:
+    return response.json().get("name", "").strip()
+  elif response.status_code == 404:
+    return False  # priavt room
+  else:
+    func_write_to_log(f"Failed to get room name: {response.text}", "ERROR", "get_room_name")
+    return None
+
+
+def func_delete_message(matrix_base_url, room_id, event_id, access_token, user_agent, reason=""):
+  """Redacts (deletes) a message from a room.
+
+  Args:
+      matrix_base_url (str): The Matrix server base URL.
+      room_id (str): The room from which to delete the message.
+      event_id (str): The ID of the event (message) to delete.
+      access_token (str): The bot's access token.
+      user_agent (str): Custom user-agent string.
+      reason (str): Optional reason for deletion.
+
+  Returns:
+      bool: True if deletion succeeded, False otherwise.
+  """
+  url = f"{matrix_base_url}/_matrix/client/r0/rooms/{room_id}/redact/{event_id}"
+  headers = {
+    "Authorization": f"Bearer {access_token}",
+    "User-Agent": user_agent
+  }
+  payload = {"reason": reason} if reason else {}
+  response = requests.post(url, headers=headers, json=payload)
+
+  if response.status_code == 200:
+    func_write_to_log(f"Deleted message {event_id} in room {room_id}", "INFO", "func_delete_message")
+    return True
+  else:
+    func_write_to_log(f"Failed to delete message {event_id}: {response.status_code} - {response.text}", "ERROR", "func_delete_message")
+    return False
+
 # def func_set_avatar():
 #   """set avatar 
 #   ! not possible ! -> teamspeak uses a different endpoint for uploading images/profile pictures 
