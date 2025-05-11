@@ -232,8 +232,8 @@ def func_handle_admin_list_banned_users(matrix_base_url, matrix_room, sync_heade
   output = "**Banned Users in this Room :eyes::**\n\n"
   for i, user in enumerate(banned_users, 1):
     display = user['displayname'] or func_get_username(matrix_base_url, user['user_id'], sync_headers)
-    reason = f" – _{user['reason']}_" if user['reason'] else ""
-    output += f"{i}. `{user['user_id']}` ({display}){reason}\n"
+    reason = f" - {user['reason']}" if user['reason'] else ""
+    output += f"{i}. \"{user['user_id']}\" ({display}){reason}\n"
 
   return output
 
