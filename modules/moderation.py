@@ -116,7 +116,7 @@ def func_reset_warnings(room_id, user_id):
     func_save_moderation_data()
 
 
-def func_et_warning_count(room_id, user_id):
+def func_get_warning_count(room_id, user_id):
   """Get the warning count for a user in a specific room.
 
   Args:
